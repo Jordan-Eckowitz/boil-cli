@@ -1,9 +1,12 @@
 // packages
-import { mkdirSync, readdirSync } from "fs";
+import { mkdirSync, readdirSync, writeFileSync } from "fs";
 import { Command, flags } from "@oclif/command";
 
 // utils
 import { print, emoji, emojis } from "../utils";
+
+// constants
+import { globalYaml } from "./init.spec";
 
 export default class Init extends Command {
   static description = "create a new boilerplate directory";
@@ -20,6 +23,7 @@ export default class Init extends Command {
 
   async run() {
     // const { args, flags } = this.parse(Init);
+    const rootPath = "./.boilerplate";
 
     const boilerplateExists = readdirSync("./").some(
       (dir) => dir === ".boilerplate"
@@ -32,11 +36,12 @@ export default class Init extends Command {
         )} looks like you already have a .boilerplate folder`
       );
     } else {
-      mkdirSync("./.boilerplate");
+      mkdirSync(rootPath);
+      writeFileSync(`${rootPath}/global.args.yml`, globalYaml);
       this.log(
-        `\n${emojis([":tropical_drink:", ":dancer:"])} ${print(
-          ".boilerplate folder has been created in the root of the current directory"
-        )}\n`
+        `${emojis([":tropical_drink:", ":dancer:"])} ${print(
+          `'.boilerplate' folder has been created in the root of the current directory`
+        )}`
       );
     }
   }

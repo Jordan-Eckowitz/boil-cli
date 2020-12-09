@@ -6,7 +6,7 @@ import { Command, flags } from "@oclif/command";
 import { print, emoji, emojis } from "../utils";
 
 // constants
-import { globalYaml } from "./init.spec";
+import { globalYaml, localYaml, placeholderContent } from "./init.spec";
 
 export default class Init extends Command {
   static description = "create a new boilerplate directory";
@@ -38,6 +38,13 @@ export default class Init extends Command {
     } else {
       mkdirSync(rootPath);
       writeFileSync(`${rootPath}/global.args.yml`, globalYaml);
+      mkdirSync(`${rootPath}/component`);
+      writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
+      mkdirSync(`${rootPath}/component/|| name ||`);
+      writeFileSync(
+        `${rootPath}/component/|| name ||/|| name ||.|| type ||`,
+        placeholderContent
+      );
       this.log(
         `${emojis([":tropical_drink:", ":dancer:"])} ${print(
           `'.boilerplate' folder has been created in the root of the current directory`

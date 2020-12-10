@@ -29,7 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`boil help [COMMAND]`](#boil-help-command)
-* [`boil init [FILE]`](#boil-init-file)
+* [`boil init`](#boil-init)
 
 ## `boil help [COMMAND]`
 
@@ -48,18 +48,16 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
-## `boil init [FILE]`
+## `boil init`
 
-describe the command here
+create a new boilerplate directory
 
 ```
 USAGE
-  $ boil init [FILE]
+  $ boil init
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/init.ts)_

@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`boil help [COMMAND]`](#boil-help-command)
 * [`boil init`](#boil-init)
+* [`boil up [FILE]`](#boil-up-file)
 
 ## `boil help [COMMAND]`
 
@@ -61,4 +62,20 @@ OPTIONS
 ```
 
 _See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/init.ts)_
+
+## `boil up [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ boil up [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/up.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/up.ts)_
 <!-- commandsstop -->

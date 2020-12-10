@@ -1,25 +1,32 @@
-import {Command, flags} from '@oclif/command'
+// packages
+import { Command, flags } from "@oclif/command";
+import { chunk, fromPairs } from "lodash";
+import pipe from "lodash/fp/pipe";
 
 export default class Up extends Command {
-  static description = 'describe the command here'
+  static description = "run one of your boilerplate template commands";
+
+  static strict = false; // allow any user inputs
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
-  }
+    help: flags.help({ char: "h" }),
+  };
 
-  static args = [{name: 'file'}]
+  static args = [
+    {
+      name: "command",
+      required: true,
+      description: `call up a template command defined in the '.boilerplate' folder`,
+    },
+  ];
 
   async run() {
-    const {args, flags} = this.parse(Up)
-
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/jordan/development/boil-cli/src/commands/up.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+    const { args, flags } = this.parse(Up);
+    const { command } = args;
+    const inputs = process.argv;
+    const commandIndex = inputs.indexOf(command);
+    const inputsAfterCommand = inputs.slice(commandIndex + 1);
+    const pairs = pipe(chunk, fromPairs)(inputsAfterCommand, 2);
+    console.log(pairs);
   }
 }

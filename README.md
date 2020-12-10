@@ -28,28 +28,8 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`boil hello [FILE]`](#boil-hello-file)
 * [`boil help [COMMAND]`](#boil-help-command)
-
-## `boil hello [FILE]`
-
-describe the command here
-
-```
-USAGE
-  $ boil hello [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ boil hello
-  hello world from ./src/hello.ts!
-```
-
-_See code: [src/commands/hello.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/hello.ts)_
+* [`boil init`](#boil-init)
 
 ## `boil help [COMMAND]`
 
@@ -67,4 +47,18 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+
+## `boil init`
+
+create a new boilerplate directory
+
+```
+USAGE
+  $ boil init
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/init.ts)_
 <!-- commandsstop -->

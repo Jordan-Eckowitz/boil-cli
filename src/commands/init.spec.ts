@@ -25,4 +25,4 @@ name: # argument will be called using --name
   description: component name # used in help menu
 `;
 
-export const placeholderContent = `const ||name|| = "hello world"`;
+export const placeholderContent = `<|name|> = "hello world"`;

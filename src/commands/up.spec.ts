@@ -1,9 +1,9 @@
 // packages
 import { readdirSync, lstatSync } from "fs";
 
-// regex looks for anything between double pipes (||*||)
+// regex looks for anything between double pipes (<|*|>)
 const extractVariablesArray = (variable: string) => {
-  const templateVariable = variable.match(/(?<=\|\|)(.*?)(?=\|\|)/g);
+  const templateVariable = variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
   // trim whitespaces
   if (templateVariable) {
     return templateVariable.map((variable) => variable.trim());
@@ -15,7 +15,7 @@ export const commandVariables = (command: string) => {
   const rootPath = `./.boilerplate/${command}`;
   const variables: string[] = [];
 
-  // recursively look for template variables (||*||) in directory and file names
+  // recursively look for template variables (<|*|>) in directory and file names
   const variablesFromDirectoryAndFileNames = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
     directoriesAndFiles.forEach((dirOrFile) => {
@@ -36,6 +36,6 @@ export const commandVariables = (command: string) => {
   };
   variablesFromDirectoryAndFileNames(rootPath);
 
-  // TODO: look for template variables (||*||) in files names
+  // TODO: look for template variables within files
   console.log(variables);
 };

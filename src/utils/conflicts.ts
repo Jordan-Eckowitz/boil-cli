@@ -1,10 +1,10 @@
 // packages
-import { readdirSync } from "fs";
+import { existsSync } from "fs";
 
 export const boilerplateExists = () => {
-  return readdirSync("./").some((dir) => dir === ".boilerplate");
+  return existsSync(`./.boilerplate`);
 };
 
 export const commandExists = (command: string) => {
-  return readdirSync("./.boilerplate").some((dir) => dir === command);
+  return existsSync(`./.boilerplate/${command}`);
 };

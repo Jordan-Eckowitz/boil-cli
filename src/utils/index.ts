@@ -1,2 +1,2 @@
-export { print, emoji, emojis } from "./logging";
-export { boilerplateExists } from "./conflicts";
+export { print, printError, emoji, emojis } from "./logging";
+export { boilerplateExists, commandExists } from "./conflicts";

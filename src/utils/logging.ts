@@ -7,6 +7,10 @@ export const print = (msg: string, color: string = "green") => {
   return chalk.keyword(color)(msg);
 };
 
+export const printError = (msg: string) => {
+  return `${emoji(":unamused:")} ${print(msg, "red")}`;
+};
+
 /*
 common app emojis (recommended): http://www.emoji-cheat-sheet.com/
 package emojis: https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json

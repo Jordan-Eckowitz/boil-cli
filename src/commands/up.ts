@@ -5,6 +5,7 @@ import pipe from "lodash/fp/pipe";
 
 // utils
 import { boilerplateExists, commandExists, printError } from "../utils";
+import { commandVariables } from "./up.spec";
 
 export default class Up extends Command {
   static description = "run one of your boilerplate template commands";
@@ -19,7 +20,7 @@ export default class Up extends Command {
     {
       name: "command",
       required: true,
-      description: `call up a template command defined in the '.boilerplate' folder`,
+      description: `call up a template command defined in the '.boilerplate' directory`,
     },
   ];
 
@@ -31,16 +32,16 @@ export default class Up extends Command {
     const inputsAfterCommand = inputs.slice(commandIndex + 1);
     const pairs = pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 
-    // 1. check that '.boilerplate' folder exists
+    // 1. check that '.boilerplate' directory exists
     if (!boilerplateExists()) {
       return this.error(
         printError(
-          `looks like you don't have a '.boilerplate' folder - run 'boil init' to start a new project`
+          `looks like you don't have a '.boilerplate' directory - run 'boil init' to start a new project`
         )
       );
     }
 
-    // 2. If there's no command folder matching the user command then throw an error
+    // 2. If there's no command directory matching the user command then throw an error
     if (!commandExists(command)) {
       return this.error(
         printError(
@@ -49,6 +50,8 @@ export default class Up extends Command {
       );
     }
 
+    // 3. Extract all template variables (||*||) from the command directory
+    commandVariables(command);
     console.log(pairs);
   }
 }

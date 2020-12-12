@@ -1,5 +1,5 @@
 // packages
-import { readdirSync } from "fs";
+import { readdirSync, lstatSync } from "fs";
 
 // regex looks for anything between double pipes (||*||)
 const extractVariablesArray = (variable: string) => {
@@ -12,20 +12,30 @@ const extractVariablesArray = (variable: string) => {
 };
 
 export const commandVariables = (command: string) => {
+  const rootPath = `./.boilerplate/${command}`;
   const variables: string[] = [];
-  // TODO: look for template variables (||*||) in directory names
-  const directoryNames = readdirSync(`./.boilerplate/${command}`);
-  directoryNames.forEach((dir) => {
-    const variableNames = extractVariablesArray(dir);
-    variableNames.forEach((variable) => variables.push(variable));
-  });
+
+  // recursively look for template variables (||*||) in directory and file names
+  const variablesFromDirectoryAndFileNames = (path: string) => {
+    const directoriesAndFiles = readdirSync(path);
+    directoriesAndFiles.forEach((dirOrFile) => {
+      // log template variables within the current path
+      extractVariablesArray(dirOrFile).forEach((variable) =>
+        variables.push(variable)
+      );
+      // look if there are any nested directories
+      const nestedPath = `${path}/${dirOrFile}`;
+      if (lstatSync(nestedPath).isDirectory()) {
+        const nestedDirectories = readdirSync(nestedPath);
+        // if nested directories exist then recursively look for template variables at that path
+        if (nestedDirectories) {
+          variablesFromDirectoryAndFileNames(nestedPath);
+        }
+      }
+    });
+  };
+  variablesFromDirectoryAndFileNames(rootPath);
+
+  // TODO: look for template variables (||*||) in files names
   console.log(variables);
-  /*
-  
-  
-  
-  
-  */
-  // TODO: look for template variables (||*||) in files names
-  // TODO: look for template variables (||*||) in files names
 };

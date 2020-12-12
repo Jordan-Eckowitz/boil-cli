@@ -51,7 +51,7 @@ export default class Up extends Command {
     }
 
     // 3. Extract all template variables (||*||) from the command directory
-    commandVariables(command);
+    console.log(commandVariables(command));
     console.log(pairs);
   }
 }

@@ -1,9 +1,9 @@
 // packages
-import { mkdirSync, readdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { Command, flags } from "@oclif/command";
 
 // utils
-import { print, emoji, emojis } from "../utils";
+import { print, emoji, emojis, boilerplateExists } from "../utils";
 
 // constants
 import { globalYaml, localYaml, placeholderContent } from "./init.spec";
@@ -36,11 +36,7 @@ export default class Init extends Command {
   };
 
   async run() {
-    const boilerplateExists = readdirSync("./").some(
-      (dir) => dir === ".boilerplate"
-    );
-
-    if (boilerplateExists) {
+    if (boilerplateExists()) {
       this.error(
         `${emoji(":unamused:")} ${print(
           `looks like you already have a '.boilerplate' folder`,

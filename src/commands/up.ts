@@ -2,6 +2,7 @@
 import { Command, flags } from "@oclif/command";
 import { chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
+import read from "read-data";
 
 // utils
 import { boilerplateExists, commandExists, printError } from "../utils";
@@ -50,8 +51,8 @@ export default class Up extends Command {
       );
     }
 
-    // 3. Extract all template variables (||*||) from the command directory
-    console.log(commandVariables(command));
+    // 3. Extract all template variables (<|*|>) from the command directory
+    const variables = commandVariables(command);
     console.log(pairs);
   }
 }

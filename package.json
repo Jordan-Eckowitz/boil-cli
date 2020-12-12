@@ -16,6 +16,7 @@
     "chalk": "^4.1.0",
     "lodash": "^4.17.20",
     "node-emoji": "^1.10.0",
+    "read-data": "^1.1.0",
     "tslib": "^1.14.1"
   },
   "devDependencies": {

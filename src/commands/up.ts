@@ -53,7 +53,7 @@ export default class Up extends Command {
     // 3. Extract all template variables (<|*|>) from the command directory
     const variables = commandVariables(command);
 
-    // 4. check the local args and global args to see if all template variables are defined - if some are not then prompt the user which are missing and throw an error
+    // 4. Check the local args and global args to see if all template variables are defined - if some are not then prompt the user which are missing and throw an error
     const definedArgs = localAndGlobalArgs(command);
     const missingArgs = variables.filter(
       (variable) => !definedArgs.includes(variable)
@@ -67,6 +67,8 @@ export default class Up extends Command {
       missingArgs.forEach((arg) => this.log(print(`  - ${arg}`, "red")));
       return;
     }
+
+    // 5. Check if the user has provided all the required args. If some are missing then tell them which args they are and show the command help output
 
     //
     console.log(pairs);

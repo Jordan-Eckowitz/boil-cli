@@ -131,7 +131,7 @@ export default class Up extends Command {
         message:
           "where would you like to save the boilerplate files and/or folders?",
         type: "input",
-        default: "./src",
+        default: "./",
       },
     ]);
     console.log(source);

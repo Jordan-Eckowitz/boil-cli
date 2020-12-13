@@ -1,11 +1,16 @@
 // packages
 import { Command, flags } from "@oclif/command";
-import { chunk, fromPairs } from "lodash";
-import pipe from "lodash/fp/pipe";
 
 // utils
 import { boilerplateExists, commandExists, print, printError } from "../utils";
-import { commandVariables, localAndGlobalArgs } from "./up.spec";
+import {
+  commandVariables,
+  localAndGlobalArgs,
+  userProvidedArgs,
+} from "./up.spec";
+
+// types
+import { ArgsObject } from "../types/args";
 
 export default class Up extends Command {
   static description = "run one of your boilerplate template commands";
@@ -27,10 +32,6 @@ export default class Up extends Command {
   async run() {
     const { args } = this.parse(Up);
     const { command } = args;
-    const inputs = process.argv;
-    const commandIndex = inputs.indexOf(command);
-    const inputsAfterCommand = inputs.slice(commandIndex + 1);
-    const pairs = pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 
     // 1. check that '.boilerplate' directory exists
     if (!boilerplateExists()) {
@@ -54,23 +55,65 @@ export default class Up extends Command {
     const variables = commandVariables(command);
 
     // 4. Check the local args and global args to see if all template variables are defined - if some are not then prompt the user which are missing and throw an error
-    const definedArgs = localAndGlobalArgs(command);
-    const missingArgs = variables.filter(
+    const definedArgs: ArgsObject = localAndGlobalArgs(command);
+    const undefinedArgs = variables.filter(
       (variable) => !Object.keys(definedArgs).includes(variable)
     );
-    if (missingArgs.length > 0) {
+    if (undefinedArgs.length > 0) {
       this.log(
         printError(
           `looks like your command has template variables that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
         )
       );
-      missingArgs.forEach((arg) => this.log(print(`  - ${arg}`, "red")));
+      undefinedArgs.forEach((arg) => this.log(print(`  - ${arg}`, "red")));
       return;
     }
 
-    // 5. Check if the user has provided all the required args. If some are missing then tell them which args they are and show the command help output
+    /* 5. If all template variables have been defined then check if the user has provided all the args. 
+      If some are missing then first check if the args have default values.
+      If some args are still missing then throw an error and show the command help prompt
+    */
+    const userArgs = userProvidedArgs(command);
 
-    //
-    console.log(pairs);
+    // check that user flags begin with either -- or -
+    const invalidFlags = Object.keys(userArgs).some(
+      (arg) => !arg.match(/^--/g) && !arg.match(/^-/g)
+    );
+    if (invalidFlags) {
+      return this.log(
+        printError(
+          `all your arg flags should begin with --(full name) or -(shorthand)`
+        )
+      );
+    }
+
+    // match user flags to defined args - if some don't match then throw an error
+    const requiredArgs: ArgsObject = variables.reduce(
+      (obj, arg) => ({ ...obj, [arg]: definedArgs[arg] }),
+      {}
+    );
+
+    /*
+      first check if the variable name exists in the required args object
+      if it doesn't exist then set the nameMatch to the shorthand
+      if there isn't a shorthand then set nameMatch to the default value
+      if there still isn't a match then throw an error (user needs to adjust input args)
+    */
+    const invalidUserInputs = Object.keys(userArgs).some((arg) => {
+      const extractName = arg.match(/(?<=--).*/g) || arg.match(/(?<=-).*/g);
+      const variableName = extractName![0];
+      const nameMatch =
+        requiredArgs[variableName] ||
+        Object.values(requiredArgs).find(
+          (arg) => arg.shorthand === variableName || arg.default
+        );
+      return !nameMatch;
+    });
+
+    if (invalidUserInputs) {
+      return this.log(
+        printError(`your args don't match the command requirements`)
+      );
+    }
   }
 }

@@ -1,7 +1,8 @@
 // packages
-import uniq from "lodash/uniq";
 import { readdirSync, readFileSync, lstatSync, existsSync } from "fs";
 import read from "read-data";
+import { uniq, chunk, fromPairs } from "lodash";
+import pipe from "lodash/fp/pipe";
 
 // regex looks for anything between double pipes (<|*|>)
 const extractVariablesArray = (variable: string) => {
@@ -66,4 +67,11 @@ export const localAndGlobalArgs = (command: string) => {
   getArgs(globalPath);
   getArgs(localPath);
   return args;
+};
+
+export const userProvidedArgs = (command: string) => {
+  const inputs = process.argv;
+  const commandIndex = inputs.indexOf(command);
+  const inputsAfterCommand = inputs.slice(commandIndex + 1);
+  return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 };

@@ -52,12 +52,12 @@ export const commandVariables = (command: string) => {
 
 export const localAndGlobalArgs = (command: string) => {
   const rootPath = `./.boilerplate`;
-  const args: string[] = [];
+  let args = {};
 
   const getArgs = (path: string) => {
     if (existsSync(path)) {
       const argsObject = read.sync(path) || {};
-      Object.keys(argsObject).forEach((arg) => args.push(arg));
+      args = { ...args, ...argsObject };
     }
   };
 
@@ -65,5 +65,5 @@ export const localAndGlobalArgs = (command: string) => {
   const localPath = `${rootPath}/${command}/local.args.yml`;
   getArgs(globalPath);
   getArgs(localPath);
-  return uniq(args);
+  return args;
 };

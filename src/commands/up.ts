@@ -8,6 +8,7 @@ import {
   localAndGlobalArgs,
   userProvidedArgs,
 } from "./up.spec";
+import { commandArgsTable } from "../utils";
 
 // types
 import { ArgsObject } from "../types/args";
@@ -82,14 +83,14 @@ export default class Up extends Command {
     if (invalidFlags) {
       return this.log(
         printError(
-          `all your arg flags should begin with --(full name) or -(shorthand)`
+          `all your arg flags should begin with --(name) or -(shorthand)`
         )
       );
     }
 
     // match user flags to defined args - if some don't match then throw an error
     const requiredArgs: ArgsObject = variables.reduce(
-      (obj, arg) => ({ ...obj, [arg]: definedArgs[arg] }),
+      (obj, arg) => ({ ...obj, [arg]: { ...definedArgs[arg], name: arg } }),
       {}
     );
 
@@ -111,9 +112,9 @@ export default class Up extends Command {
     });
 
     if (invalidUserInputs) {
-      return this.log(
-        printError(`your args don't match the command requirements`)
-      );
+      this.log(printError(`your args don't match the command requirements`));
+      commandArgsTable(Object.values(requiredArgs), "up", command);
+      return;
     }
   }
 }

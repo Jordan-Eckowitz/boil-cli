@@ -1,5 +1,6 @@
 // packages
 import { Command, flags } from "@oclif/command";
+import * as inquirer from "inquirer";
 
 // utils
 import { boilerplateExists, commandExists, print, printError } from "../utils";
@@ -12,6 +13,10 @@ import { commandArgsTable } from "../utils";
 
 // types
 import { ArgsObject } from "../types/args";
+
+interface Prompt {
+  source: string;
+}
 
 export default class Up extends Command {
   static description = "run one of your boilerplate template commands";
@@ -116,5 +121,19 @@ export default class Up extends Command {
       commandArgsTable(Object.values(requiredArgs), "up", command);
       return;
     }
+
+    // TODO: 6. If an arg has fixed options then determine if the user input is valid
+
+    // 7. Prompt the user where to save the boilerplate files and/or folders
+    const { source }: Prompt = await inquirer.prompt([
+      {
+        name: "source",
+        message:
+          "where would you like to save the boilerplate files and/or folders?",
+        type: "input",
+        default: "./src",
+      },
+    ]);
+    console.log(source);
   }
 }

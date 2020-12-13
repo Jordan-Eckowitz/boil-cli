@@ -21,9 +21,9 @@ const generateFilesAndFolders = () => {
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
   // folder with template variable name
   mkdirSync(`${rootPath}/component/<| name |>`);
-  // file with template variable name and type
+  // file with template variable name and filetype
   writeFileSync(
-    `${rootPath}/component/<| name |>/<| name |>.<| type |>`,
+    `${rootPath}/component/<| name |>/<| name |>.<| filetype |>`,
     placeholderContent
   );
 };
@@ -37,7 +37,7 @@ export default class Init extends Command {
 
   async run() {
     if (boilerplateExists()) {
-      this.error(
+      this.log(
         printError(`looks like you already have a '.boilerplate' folder`)
       );
     } else {

@@ -1,6 +1,7 @@
 // packages
 import uniq from "lodash/uniq";
-import { readdirSync, readFileSync, lstatSync } from "fs";
+import { readdirSync, readFileSync, lstatSync, existsSync } from "fs";
+import read from "read-data";
 
 // regex looks for anything between double pipes (<|*|>)
 const extractVariablesArray = (variable: string) => {
@@ -47,4 +48,22 @@ export const commandVariables = (command: string) => {
 
   // return array of unique variable names
   return uniq(variables);
+};
+
+export const localAndGlobalArgs = (command: string) => {
+  const rootPath = `./.boilerplate`;
+  const args: string[] = [];
+
+  const getArgs = (path: string) => {
+    if (existsSync(path)) {
+      const argsObject = read.sync(path) || {};
+      Object.keys(argsObject).forEach((arg) => args.push(arg));
+    }
+  };
+
+  const globalPath = `${rootPath}/global.args.yml`;
+  const localPath = `${rootPath}/${command}/local.args.yml`;
+  getArgs(globalPath);
+  getArgs(localPath);
+  return uniq(args);
 };

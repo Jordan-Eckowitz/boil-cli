@@ -1,8 +1,10 @@
 export interface Arg {
+  name?: string;
   shorthand?: string;
   description?: string;
   default?: string;
-  options?: string;
+  options?: string[];
+  value?: string;
 }
 
 export interface ArgsObject {

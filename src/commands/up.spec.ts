@@ -4,7 +4,7 @@ import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
 
-// regex looks for anything between double pipes (<|*|>)
+// regex looks for anything between triangles (<|*|>)
 const extractVariablesArray = (variable: string) => {
   const templateVariable = variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
   // trim whitespaces

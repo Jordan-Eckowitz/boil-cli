@@ -8,6 +8,7 @@ import {
   commandVariables,
   localAndGlobalArgs,
   userProvidedArgs,
+  generateBoilerplate,
 } from "./up.spec";
 import { commandArgsTable } from "../utils";
 
@@ -154,6 +155,8 @@ export default class Up extends Command {
         default: "./",
       },
     ]);
-    console.log(source);
+
+    // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
+    generateBoilerplate(command, source);
   }
 }

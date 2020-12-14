@@ -75,3 +75,8 @@ export const userProvidedArgs = (command: string) => {
   const inputsAfterCommand = inputs.slice(commandIndex + 1);
   return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 };
+
+export const generateBoilerplate = (command: string, source: string) => {
+  // const rootPath = `./.boilerplate/${command}`;
+  console.log(source);
+};

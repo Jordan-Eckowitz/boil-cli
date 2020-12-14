@@ -4,6 +4,9 @@ import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
 
+// types
+import { Arg } from "../types/args";
+
 // regex looks for anything between triangles (<|*|>)
 const extractVariablesArray = (variable: string) => {
   const templateVariable = variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
@@ -76,7 +79,36 @@ export const userProvidedArgs = (command: string) => {
   return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 };
 
-export const generateBoilerplate = (command: string, source: string) => {
-  // const rootPath = `./.boilerplate/${command}`;
-  console.log(source);
+export const generateBoilerplate = (
+  command: string,
+  source: string,
+  args: Arg[]
+) => {
+  const rootPath = `./.boilerplate/${command}`;
+  const makeFilesFolders = (path: string) => {
+    const directoriesAndFiles = readdirSync(path);
+    directoriesAndFiles.forEach((dirOrFile) => {
+      if (dirOrFile !== "local.args.yml") {
+        const nestedPath = `${path}/${dirOrFile}`;
+        const stats = lstatSync(nestedPath);
+        const [isFile, isDirectory] = [stats.isFile(), stats.isDirectory()];
+        const writePath = nestedPath.replace(rootPath, source);
+
+        // TODO: if file then replace any variables in file name with value
+        // TODO: also, write the file contents (also replacing any variables with values)
+        if (isFile) {
+          console.log(`FILE ---> ${dirOrFile}`);
+        }
+
+        // TODO: if directory then replace any variables in folder name with value
+        // TODO: also, recursively callback 'makeFilesFolders' to look for any nested files/folders
+        if (isDirectory) {
+          console.log(`DIR ---> ${dirOrFile}`);
+        }
+
+        console.log(writePath);
+      }
+    });
+  };
+  makeFilesFolders(rootPath);
 };

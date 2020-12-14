@@ -122,22 +122,20 @@ export default class Up extends Command {
 
     // if a user hasn't provided all args then check if any of the required args have default values.
     // also, if the arg has an options array check the input value is a valid option
-    const checkDefaultsAndOptions = matchRequiredToUserInputs.map(
-      (args, idx) => {
-        let output: Arg = args;
-        const hasArgs = Object.keys(output).length > 0;
-        if (!hasArgs) {
-          const requiredArg = Object.values(requiredArgs)[idx];
-          output = { ...requiredArg, value: requiredArg.default };
-        }
-        const validInputAgainstOptions = output.options
-          ? !!output.options.find((option) => option === output.value)
-          : !!output.value; // if the value is undefined then this variable will be false
-        return { ...output, valid: validInputAgainstOptions };
+    const validatedArgs = matchRequiredToUserInputs.map((args, idx) => {
+      let output: Arg = args;
+      const hasArgs = Object.keys(output).length > 0;
+      if (!hasArgs) {
+        const requiredArg = Object.values(requiredArgs)[idx];
+        output = { ...requiredArg, value: requiredArg.default };
       }
-    );
+      const validInputAgainstOptions = output.options
+        ? !!output.options.find((option) => option === output.value)
+        : !!output.value; // if the value is undefined then this variable will be false
+      return { ...output, valid: validInputAgainstOptions };
+    });
 
-    const notAllValid = checkDefaultsAndOptions.some((arg) => !arg.value);
+    const notAllValid = validatedArgs.some((arg) => !arg.value);
 
     if (notAllValid) {
       this.log(printError(`your args don't match the command requirements`));
@@ -157,6 +155,6 @@ export default class Up extends Command {
     ]);
 
     // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
-    generateBoilerplate(command, source);
+    generateBoilerplate(command, source, validatedArgs);
   }
 }

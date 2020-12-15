@@ -11,6 +11,8 @@ import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
 
+import { emoji } from "../utils";
+
 const extractVariable = (variable: string) => {
   return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
 };
@@ -114,6 +116,8 @@ export const userProvidedArgs = (command: string) => {
   return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
 };
 
+export const dirExists = (path: string) => existsSync(path);
+
 export const generateBoilerplate = (
   command: string,
   source: string,
@@ -130,19 +134,39 @@ export const generateBoilerplate = (
         const stats = lstatSync(nestedPath);
         const [isFile, isDirectory] = [stats.isFile(), stats.isDirectory()];
         const writePath = withValues(nestedPath.replace(rootPath, source));
+        const successMsg = () => {
+          return console.log(
+            `${emoji(":white_check_mark:")} writing: ${writePath}`
+          );
+        };
+        const failMsg = () => {
+          return console.log(
+            `${emoji(":no_entry:")} '${writePath}' already exists`
+          );
+        };
 
         // if directory then replace any variables in folder name with value
         // also, recursively callback 'makeFilesFolders' to look for any nested files/folders
         if (isDirectory) {
-          mkdirSync(writePath);
-          makeFilesFolders(nestedPath);
+          if (existsSync(writePath)) {
+            failMsg();
+          } else {
+            mkdirSync(writePath);
+            makeFilesFolders(nestedPath);
+            successMsg();
+          }
         }
 
         // if file then replace any variables in file name with value
         // also, write the file contents (also replacing any variables with values)
         if (isFile) {
-          const data = withValues(readFileSync(nestedPath, "utf8"));
-          writeFileSync(writePath, data);
+          if (existsSync(writePath)) {
+            failMsg();
+          } else {
+            const data = withValues(readFileSync(nestedPath, "utf8"));
+            writeFileSync(writePath, data);
+            successMsg();
+          }
         }
       }
     });

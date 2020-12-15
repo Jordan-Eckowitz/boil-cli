@@ -8,7 +8,7 @@ export const print = (msg: string, color: string = "green") => {
 };
 
 export const printError = (msg: string) => {
-  return `${emoji(":unamused:")} ${print(msg, "red")}`;
+  return `${emoji(":no_entry:")} ${print(msg, "red")}`;
 };
 
 /*

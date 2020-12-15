@@ -9,6 +9,7 @@ import {
   localAndGlobalArgs,
   userProvidedArgs,
   generateBoilerplate,
+  dirExists,
 } from "./up.spec";
 import { commandArgsTable } from "../utils";
 
@@ -143,7 +144,7 @@ export default class Up extends Command {
       return;
     }
 
-    // 6. Prompt the user where to save the boilerplate files and/or folders
+    // 6. Prompt the user where to save the boilerplate files and/or folders (and verify the directory exists)
     const { source }: Prompt = await inquirer.prompt([
       {
         name: "source",
@@ -153,6 +154,10 @@ export default class Up extends Command {
         default: "./",
       },
     ]);
+
+    if (!dirExists(source)) {
+      return this.log(printError(`'${source}' does not exist`));
+    }
 
     // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
     const argInputs = validatedArgs.reduce(

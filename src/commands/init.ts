@@ -1,9 +1,9 @@
 // packages
-import { mkdirSync, readdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { Command, flags } from "@oclif/command";
 
 // utils
-import { print, emoji, emojis } from "../utils";
+import { print, printError, emojis, boilerplateExists } from "../utils";
 
 // constants
 import { globalYaml, localYaml, placeholderContent } from "./init.spec";
@@ -20,10 +20,10 @@ const generateFilesAndFolders = () => {
   // create local args yml file
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
   // folder with template variable name
-  mkdirSync(`${rootPath}/component/|| name ||`);
-  // file with template variable name and type
+  mkdirSync(`${rootPath}/component/<| name |>`);
+  // file with template variable name and filetype
   writeFileSync(
-    `${rootPath}/component/|| name ||/|| name ||.|| type ||`,
+    `${rootPath}/component/<| name |>/<| name |>.<| filetype |>`,
     placeholderContent
   );
 };
@@ -36,16 +36,9 @@ export default class Init extends Command {
   };
 
   async run() {
-    const boilerplateExists = readdirSync("./").some(
-      (dir) => dir === ".boilerplate"
-    );
-
-    if (boilerplateExists) {
-      this.error(
-        `${emoji(":unamused:")} ${print(
-          `looks like you already have a '.boilerplate' folder`,
-          "red"
-        )}`
+    if (boilerplateExists()) {
+      this.log(
+        printError(`looks like you already have a '.boilerplate' folder`)
       );
     } else {
       generateFilesAndFolders();

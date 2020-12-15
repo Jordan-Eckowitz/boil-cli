@@ -12,7 +12,6 @@ filetype: # argument will be called using --filetype
 export const localYaml = `# definition of 'name' argument
 name: # argument will be called using --name
   shorthand: n # argument can be called using -n instead of --name
-  required: true # argument must be provided by user
   description: component name # used in help menu
 `;
 

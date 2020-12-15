@@ -3,7 +3,13 @@ import { Command, flags } from "@oclif/command";
 import * as inquirer from "inquirer";
 
 // utils
-import { boilerplateExists, commandExists, print, printError } from "../utils";
+import {
+  boilerplateExists,
+  commandExists,
+  print,
+  printError,
+  commandArgsTable,
+} from "../utils";
 import {
   commandVariables,
   localAndGlobalArgs,
@@ -13,7 +19,6 @@ import {
   generateBoilerplate,
   dirExists,
 } from "./up.spec";
-import { commandArgsTable } from "../utils";
 
 // types
 import { ArgsObject } from "../types";

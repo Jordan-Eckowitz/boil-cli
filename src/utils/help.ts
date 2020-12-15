@@ -8,10 +8,10 @@ export const commandArgsTable = (
 ) => {
   console.log(`\nboil ${trigger} ${command} ARGS\n`);
   return cli.table(array, {
-    name: { minWidth: 15 },
-    shorthand: { minWidth: 15 },
-    description: { minWidth: 30 },
+    name: { minWidth: 15, header: "Name [--]" },
+    shorthand: { minWidth: 20, header: "Shorthand [-]" },
     default: { minWidth: 15 },
     options: { minWidth: 10 },
+    description: { minWidth: 30 },
   });
 };

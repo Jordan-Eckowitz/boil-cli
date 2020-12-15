@@ -5,11 +5,8 @@ filetype: # argument will be called using --filetype
   default: js # if argument not provided by user then default to this value
   options: # if user provides an input not in this list then throw an error
     - js
-    - ts
     - py
     - go
-    - rb
-    - java
 `;
 
 export const localYaml = `# definition of 'name' argument

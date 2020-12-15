@@ -136,7 +136,7 @@ export default class Up extends Command {
       return { ...output, valid: validInputAgainstOptions };
     });
 
-    const notAllValid = validatedArgs.some((arg) => !arg.value);
+    const notAllValid = validatedArgs.some((arg) => !arg.valid);
 
     if (notAllValid) {
       this.log(printError(`your args don't match the command requirements`));

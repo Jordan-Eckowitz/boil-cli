@@ -30,7 +30,7 @@ USAGE
 <!-- commands -->
 * [`boil help [COMMAND]`](#boil-help-command)
 * [`boil init`](#boil-init)
-* [`boil up [FILE]`](#boil-up-file)
+* [`boil up COMMAND`](#boil-up-command)
 
 ## `boil help [COMMAND]`
 
@@ -63,18 +63,25 @@ OPTIONS
 
 _See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/init.ts)_
 
-## `boil up [FILE]`
+## `boil up COMMAND`
 
-describe the command here
+run one of your boilerplate template commands
 
 ```
 USAGE
-  $ boil up [FILE]
+  $ boil up COMMAND
+
+ARGUMENTS
+  COMMAND  call up a template command defined in the '.boilerplate' directory
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
+
+EXAMPLES
+  $ boil up component --name App --filetype js
+  $ boil up component -n App -ft js
+
+  run boil list to see all available boilerplate template commands
 ```
 
 _See code: [src/commands/up.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/up.ts)_

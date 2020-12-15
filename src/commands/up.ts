@@ -37,6 +37,13 @@ export default class Up extends Command {
     },
   ];
 
+  static examples = [
+    `$ boil up component ${print("--name")} App ${print("--filetype")} js`,
+    `$ boil up component ${print("-n")} App ${print("-ft")} js
+
+run ${print("boil list")} to see all available boilerplate template commands`,
+  ];
+
   async run() {
     const { args } = this.parse(Up);
     const { command } = args;

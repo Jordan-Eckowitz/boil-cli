@@ -155,6 +155,11 @@ export default class Up extends Command {
     ]);
 
     // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
-    generateBoilerplate(command, source, validatedArgs);
+    const argInputs = validatedArgs.reduce(
+      (output, { name, value }) => ({ ...output, [name!]: value }),
+      {}
+    );
+
+    generateBoilerplate(command, source, argInputs);
   }
 }

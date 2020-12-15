@@ -4,12 +4,30 @@ import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
 
-// types
-import { Arg } from "../types/args";
+const extractVariable = (variable: string) => {
+  return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+};
+
+const replaceVariables = (
+  content: string,
+  varPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
+) => {
+  // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
+  const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
+  const whitespaceRightOfWord = /(?<=[^\W])\s+(?=\|\>)/g; // 'WORD   |>'
+  const contentWithoutWhitespaces = content
+    .replace(whitespaceLeftOfWord, "")
+    .replace(whitespaceRightOfWord, "");
+
+  // replace variable placeholders with values
+  return Object.keys(varPlaceholderValues).reduce((output, arg) => {
+    return output.replace(`<|${arg}|>`, varPlaceholderValues[arg]);
+  }, contentWithoutWhitespaces);
+};
 
 // regex looks for anything between triangles (<|*|>)
 const extractVariablesArray = (variable: string) => {
-  const templateVariable = variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+  const templateVariable = extractVariable(variable);
   // trim whitespaces
   if (templateVariable) {
     return templateVariable.map((variable) => variable.trim());
@@ -82,7 +100,7 @@ export const userProvidedArgs = (command: string) => {
 export const generateBoilerplate = (
   command: string,
   source: string,
-  args: Arg[]
+  args: { [key: string]: string }
 ) => {
   const rootPath = `./.boilerplate/${command}`;
   const makeFilesFolders = (path: string) => {
@@ -93,6 +111,8 @@ export const generateBoilerplate = (
         const stats = lstatSync(nestedPath);
         const [isFile, isDirectory] = [stats.isFile(), stats.isDirectory()];
         const writePath = nestedPath.replace(rootPath, source);
+
+        const templateVariable = replaceVariables(dirOrFile, args);
 
         // TODO: if file then replace any variables in file name with value
         // TODO: also, write the file contents (also replacing any variables with values)
@@ -106,7 +126,7 @@ export const generateBoilerplate = (
           console.log(`DIR ---> ${dirOrFile}`);
         }
 
-        console.log(writePath);
+        console.log(templateVariable);
       }
     });
   };

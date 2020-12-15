@@ -155,8 +155,12 @@ export default class Up extends Command {
       },
     ]);
 
-    if (!dirExists(source)) {
-      return this.log(printError(`'${source}' does not exist`));
+    // if source is missing root ('./...') then add it
+    const formattedSource =
+      source.slice(0, 2) === "./" ? source : `./${source}`;
+
+    if (!dirExists(formattedSource)) {
+      return this.log(printError(`'${formattedSource}' does not exist`));
     }
 
     // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
@@ -165,6 +169,6 @@ export default class Up extends Command {
       {}
     );
 
-    generateBoilerplate(command, source, argInputs);
+    generateBoilerplate(command, formattedSource, argInputs);
   }
 }

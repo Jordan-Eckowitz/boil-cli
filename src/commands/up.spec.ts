@@ -11,7 +11,11 @@ import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
 
+// utils
 import { emoji } from "../utils";
+
+// types
+import { Arg, ArgsObject } from "../types";
 
 const extractVariable = (variable: string) => {
   return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
@@ -114,6 +118,43 @@ export const userProvidedArgs = (command: string) => {
   const commandIndex = inputs.indexOf(command);
   const inputsAfterCommand = inputs.slice(commandIndex + 1);
   return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
+};
+
+export const compareUserRequiredArgs = (
+  requiredArgs: object,
+  userArgs: { [key: string]: string }
+) =>
+  Object.values(requiredArgs).map((requiredArg) =>
+    Object.keys(userArgs).reduce((output, userArg) => {
+      const value = userArgs[userArg];
+      const [nameRegex, shorthandRegex] = [
+        userArg.match(/(?<=--).*/g),
+        userArg.match(/(?<=-).*/g),
+      ];
+      const userObj = {
+        name: nameRegex && nameRegex[0],
+        shorthand: !nameRegex && shorthandRegex![0],
+      };
+      const nameMatch = requiredArg.name === userObj.name;
+      const shorthandMatch = requiredArg.shorthand === userObj.shorthand;
+      if (nameMatch || shorthandMatch) return { ...requiredArg, value };
+      return output;
+    }, {})
+  );
+
+export const validateArgs = (comparedArgs: Arg[], requiredArgs: ArgsObject) => {
+  return comparedArgs.map((args, idx) => {
+    let output: Arg = args;
+    const hasArgs = Object.keys(output).length > 0;
+    if (!hasArgs) {
+      const requiredArg = Object.values(requiredArgs)[idx];
+      output = { ...requiredArg, value: requiredArg.default };
+    }
+    const validInputAgainstOptions = output.options
+      ? !!output.options.find((option) => option === output.value)
+      : !!output.value; // if the value is undefined then this variable will be false
+    return { ...output, valid: validInputAgainstOptions };
+  });
 };
 
 export const dirExists = (path: string) => existsSync(path);

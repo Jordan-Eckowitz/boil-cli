@@ -8,13 +8,15 @@ import {
   commandVariables,
   localAndGlobalArgs,
   userProvidedArgs,
+  compareUserRequiredArgs,
+  validateArgs,
   generateBoilerplate,
   dirExists,
 } from "./up.spec";
 import { commandArgsTable } from "../utils";
 
 // types
-import { Arg, ArgsObject } from "../types/args";
+import { ArgsObject } from "../types";
 
 interface Prompt {
   source: string;
@@ -94,6 +96,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     const invalidFlags = Object.keys(userArgs).some(
       (arg) => !arg.match(/^--/g) && !arg.match(/^-/g)
     );
+
     if (invalidFlags) {
       return this.log(
         printError(
@@ -109,39 +112,14 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     );
 
     // check that the required args have been provided by the user (either by the full name or the shorthand method)
-    const matchRequiredToUserInputs = Object.values(requiredArgs).map(
-      (requiredArg) =>
-        Object.keys(userArgs).reduce((output, userArg) => {
-          const value = userArgs[userArg];
-          const [nameRegex, shorthandRegex] = [
-            userArg.match(/(?<=--).*/g),
-            userArg.match(/(?<=-).*/g),
-          ];
-          const userObj = {
-            name: nameRegex && nameRegex[0],
-            shorthand: !nameRegex && shorthandRegex![0],
-          };
-          const nameMatch = requiredArg.name === userObj.name;
-          const shorthandMatch = requiredArg.shorthand === userObj.shorthand;
-          if (nameMatch || shorthandMatch) return { ...requiredArg, value };
-          return output;
-        }, {})
+    const matchRequiredToUserInputs = compareUserRequiredArgs(
+      requiredArgs,
+      userArgs
     );
 
     // if a user hasn't provided all args then check if any of the required args have default values.
     // also, if the arg has an options array check the input value is a valid option
-    const validatedArgs = matchRequiredToUserInputs.map((args, idx) => {
-      let output: Arg = args;
-      const hasArgs = Object.keys(output).length > 0;
-      if (!hasArgs) {
-        const requiredArg = Object.values(requiredArgs)[idx];
-        output = { ...requiredArg, value: requiredArg.default };
-      }
-      const validInputAgainstOptions = output.options
-        ? !!output.options.find((option) => option === output.value)
-        : !!output.value; // if the value is undefined then this variable will be false
-      return { ...output, valid: validInputAgainstOptions };
-    });
+    const validatedArgs = validateArgs(matchRequiredToUserInputs, requiredArgs);
 
     const notAllValid = validatedArgs.some((arg) => !arg.valid);
 

@@ -1,5 +1,12 @@
 // packages
-import { readdirSync, readFileSync, lstatSync, existsSync } from "fs";
+import {
+  readdirSync,
+  readFileSync,
+  lstatSync,
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+} from "fs";
 import read from "read-data";
 import { uniq, chunk, fromPairs } from "lodash";
 import pipe from "lodash/fp/pipe";
@@ -11,7 +18,7 @@ const extractVariable = (variable: string) => {
 const replaceVariables = (
   content: string,
   varPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
-) => {
+): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
   const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
   const whitespaceRightOfWord = /(?<=[^\W])\s+(?=\|\>)/g; // 'WORD   |>'
@@ -20,9 +27,19 @@ const replaceVariables = (
     .replace(whitespaceRightOfWord, "");
 
   // replace variable placeholders with values
-  return Object.keys(varPlaceholderValues).reduce((output, arg) => {
-    return output.replace(`<|${arg}|>`, varPlaceholderValues[arg]);
-  }, contentWithoutWhitespaces);
+  const newContent = Object.keys(varPlaceholderValues).reduce(
+    (output, arg): string => {
+      return output.replace(`<|${arg}|>`, varPlaceholderValues[arg]);
+    },
+    contentWithoutWhitespaces
+  );
+
+  // 'replace' only finds the first match ('replaceAll' not yet supported)
+  //  so, keep running this function recursively until no template variables remain
+  if (extractVariable(newContent)) {
+    return replaceVariables(newContent, varPlaceholderValues);
+  }
+  return newContent;
 };
 
 // regex looks for anything between triangles (<|*|>)
@@ -103,6 +120,8 @@ export const generateBoilerplate = (
   args: { [key: string]: string }
 ) => {
   const rootPath = `./.boilerplate/${command}`;
+  const withValues = (str: string) => replaceVariables(str, args);
+
   const makeFilesFolders = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
     directoriesAndFiles.forEach((dirOrFile) => {
@@ -110,23 +129,21 @@ export const generateBoilerplate = (
         const nestedPath = `${path}/${dirOrFile}`;
         const stats = lstatSync(nestedPath);
         const [isFile, isDirectory] = [stats.isFile(), stats.isDirectory()];
-        const writePath = nestedPath.replace(rootPath, source);
+        const writePath = withValues(nestedPath.replace(rootPath, source));
 
-        const templateVariable = replaceVariables(dirOrFile, args);
-
-        // TODO: if file then replace any variables in file name with value
-        // TODO: also, write the file contents (also replacing any variables with values)
-        if (isFile) {
-          console.log(`FILE ---> ${dirOrFile}`);
-        }
-
-        // TODO: if directory then replace any variables in folder name with value
-        // TODO: also, recursively callback 'makeFilesFolders' to look for any nested files/folders
+        // if directory then replace any variables in folder name with value
+        // also, recursively callback 'makeFilesFolders' to look for any nested files/folders
         if (isDirectory) {
-          console.log(`DIR ---> ${dirOrFile}`);
+          mkdirSync(writePath);
+          makeFilesFolders(nestedPath);
         }
 
-        console.log(templateVariable);
+        // if file then replace any variables in file name with value
+        // also, write the file contents (also replacing any variables with values)
+        if (isFile) {
+          const data = withValues(readFileSync(nestedPath, "utf8"));
+          writeFileSync(writePath, data);
+        }
       }
     });
   };

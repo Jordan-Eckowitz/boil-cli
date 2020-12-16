@@ -8,9 +8,9 @@ export default class Create extends Command {
 
   static flags = {
     help: flags.help({ char: "h" }),
-    args: flags.string({
-      char: "a",
-      description: "local template arguments/variables",
+    variables: flags.string({
+      char: "v",
+      description: "local template variables",
     }),
   };
 
@@ -18,9 +18,9 @@ export default class Create extends Command {
 
   static examples = [
     `$ boil create ${print("person", "blue")} ${print(
-      "--args"
+      "--variables"
     )} name,surname,age`,
-    `$ boil create ${print("person", "blue")} ${print("-a")} name,surname,age`,
+    `$ boil create ${print("person", "blue")} ${print("-v")} name,surname,age`,
   ];
 
   async run() {

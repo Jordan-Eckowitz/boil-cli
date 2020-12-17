@@ -54,8 +54,5 @@ export default class Create extends Command {
     // 4. generate template
     const variables = flags.variables ? flags.variables.split(",") : [];
     generateTemplate(name, variables);
-
-    console.log(`args: ${JSON.stringify(name)}`);
-    console.log(`flags: ${JSON.stringify(flags)}`);
   }
 }

@@ -28,9 +28,32 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`boil create [NAME]`](#boil-create-name)
 * [`boil help [COMMAND]`](#boil-help-command)
 * [`boil init`](#boil-init)
 * [`boil up COMMAND`](#boil-up-command)
+
+## `boil create [NAME]`
+
+create a new boilerplate template
+
+```
+USAGE
+  $ boil create [NAME]
+
+ARGUMENTS
+  NAME  template name
+
+OPTIONS
+  -h, --help                 show CLI help
+  -v, --variables=variables  local template variables
+
+EXAMPLES
+  $ boil create person --variables name,surname,age
+  $ boil create person -v name,surname,age
+```
+
+_See code: [src/commands/create.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/create.ts)_
 
 ## `boil help [COMMAND]`
 

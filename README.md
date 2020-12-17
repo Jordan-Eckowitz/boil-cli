@@ -45,12 +45,12 @@ ARGUMENTS
   NAME  template name
 
 OPTIONS
-  -a, --args=args  local template arguments/variables
-  -h, --help       show CLI help
+  -h, --help                 show CLI help
+  -v, --variables=variables  local template variables
 
 EXAMPLES
-  $ boil create person --args name,surname,age
-  $ boil create person -a name,surname,age
+  $ boil create person --variables name,surname,age
+  $ boil create person -v name,surname,age
 ```
 
 _See code: [src/commands/create.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/create.ts)_

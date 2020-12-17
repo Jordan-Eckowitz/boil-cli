@@ -9,7 +9,6 @@ export const templateExists = (name: string) => {
 
 export const generateTemplate = (name: string, variables: string[]) => {
   const path = `${rootPath}/${name}`;
-  console.log(variables);
   mkdirSync(path);
 
   let ymlContent = variables.reduce((output, variable) => {

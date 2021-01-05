@@ -31,6 +31,7 @@ USAGE
 * [`boil create [NAME]`](#boil-create-name)
 * [`boil help [COMMAND]`](#boil-help-command)
 * [`boil init`](#boil-init)
+* [`boil list`](#boil-list)
 * [`boil up COMMAND`](#boil-up-command)
 
 ## `boil create [NAME]`
@@ -85,6 +86,20 @@ OPTIONS
 ```
 
 _See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/init.ts)_
+
+## `boil list`
+
+list all boil commands
+
+```
+USAGE
+  $ boil list
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/list.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/list.ts)_
 
 ## `boil up COMMAND`
 

@@ -11,6 +11,9 @@ export const printError = (msg: string) => {
   return `${emoji(":no_entry:")} ${print(msg, "red")}`;
 };
 
+// bold message
+export const bold = (msg: string) => chalk.bold(msg);
+
 /*
 common app emojis (recommended): http://www.emoji-cheat-sheet.com/
 package emojis: https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json

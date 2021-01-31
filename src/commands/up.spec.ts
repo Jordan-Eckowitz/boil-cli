@@ -25,13 +25,15 @@ const extractVariable = (variable: string) => {
   return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
 };
 
+const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
+
 const replaceVariables = (
   content: string,
   varPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
   const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
-  const whitespaceRightOfWord = /(?<=[^\W])\s+(?=\|\>)/g; // 'WORD   |>'
+  const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
   const contentWithoutWhitespaces = content
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
@@ -219,8 +221,6 @@ export const generateBoilerplate = (
   makeFilesFolders(rootPath);
 };
 
-const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
-
 export const splitArgs = (variables: string[]) => {
   return variables.reduce(
     (args: SplitArgs, arg) => {
@@ -259,6 +259,7 @@ export const extractFunctionInputArgs = (functions: string[]) => {
         .split(",")
         .map((fn) => fn.trim())
     )
-    .flat();
+    .flat()
+    .filter((arg) => arg.length > 0); // exclude empty strings (functions with no args)
   return uniq(inputArgs);
 };

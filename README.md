@@ -29,6 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`boil create [NAME]`](#boil-create-name)
+* [`boil create-function [NAME]`](#boil-create-function-name)
 * [`boil help [COMMAND]`](#boil-help-command)
 * [`boil init`](#boil-init)
 * [`boil list`](#boil-list)
@@ -55,6 +56,26 @@ EXAMPLES
 ```
 
 _See code: [src/commands/create.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/create.ts)_
+
+## `boil create-function [NAME]`
+
+create a new boilerplate template function
+
+```
+USAGE
+  $ boil create-function [NAME]
+
+ARGUMENTS
+  NAME  template function name
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ boil create-function timestamp
+```
+
+_See code: [src/commands/create-function.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v0.0.0/src/commands/create-function.ts)_
 
 ## `boil help [COMMAND]`
 

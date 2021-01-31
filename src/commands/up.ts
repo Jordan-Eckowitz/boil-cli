@@ -112,7 +112,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       return;
     }
 
-    /* 6. If all template args have been defined then check if the user has provided all the args. 
+    /* 6. If all template args have been defined then check if the user has provided all the args.
       If some are missing then first check if the args have default values.
       If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the command help prompt
     */

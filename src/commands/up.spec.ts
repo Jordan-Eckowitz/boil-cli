@@ -8,7 +8,7 @@ import {
   writeFileSync,
 } from "fs";
 import read from "read-data";
-import { uniq, chunk, fromPairs } from "lodash";
+import { uniq, chunk, fromPairs, cloneDeep } from "lodash";
 import pipe from "lodash/fp/pipe";
 
 // utils
@@ -16,6 +16,10 @@ import { emoji } from "../utils";
 
 // types
 import { Arg, ArgsObject } from "../types";
+
+interface SplitArgs {
+  [key: string]: string[];
+}
 
 const extractVariable = (variable: string) => {
   return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
@@ -213,4 +217,35 @@ export const generateBoilerplate = (
     });
   };
   makeFilesFolders(rootPath);
+};
+
+const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
+
+export const splitArgs = (variables: string[]) => {
+  return variables.reduce(
+    (args: SplitArgs, arg) => {
+      const output = cloneDeep(args);
+      if (containsBrackets(arg)) {
+        output.functionalArgs.push(arg);
+      } else {
+        output.templateArgs.push(arg);
+      }
+      return output;
+    },
+    { templateArgs: [], functionalArgs: [] }
+  );
+};
+
+const extractFunctionName = (fn: string) => {
+  const bracket = containsBrackets(fn);
+  const bracketIndex = bracket!.index!;
+  return fn.slice(0, bracketIndex);
+};
+
+export const undefinedFunctions = (args: string[]) => {
+  const root = readdirSync("./.boilerplate");
+  const missingFunctions = args.filter((arg) => {
+    return !root.find((file) => file === `${extractFunctionName(arg)}.js`);
+  });
+  return missingFunctions.map((fn) => `${extractFunctionName(fn)}.js`);
 };

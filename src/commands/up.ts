@@ -18,6 +18,8 @@ import {
   validateArgs,
   generateBoilerplate,
   dirExists,
+  splitArgs,
+  undefinedFunctions,
 } from "./up.spec";
 
 // types
@@ -75,23 +77,40 @@ run ${print("boil list")} to see all available boilerplate template commands`,
 
     // 3. Extract all template variables (<|*|>) from the command directory
     const variables = commandVariables(command);
+    const { templateArgs, functionalArgs } = splitArgs(variables);
 
     // 4. Check the local args and global args to see if all template variables are defined - if some are not then prompt the user which are missing and throw an error
     const definedArgs: ArgsObject = localAndGlobalArgs(command);
-    const undefinedArgs = variables.filter(
+    const undefinedTemplateArgs = templateArgs.filter(
       (variable) => !Object.keys(definedArgs).includes(variable)
     );
-    if (undefinedArgs.length > 0) {
+    if (undefinedTemplateArgs.length > 0) {
       this.log(
         printError(
           `looks like your command has template variables that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
         )
       );
-      undefinedArgs.forEach((arg) => this.log(print(`  - ${arg}`, "red")));
+      undefinedTemplateArgs.forEach((arg) =>
+        this.log(print(`  - ${arg}`, "red"))
+      );
       return;
     }
 
-    /* 5. If all template variables have been defined then check if the user has provided all the args. 
+    // 5. check all functional args (*.js files) have been defined in '.boilerplate' directory
+    const undefinedFunctionalArgs = undefinedFunctions(functionalArgs);
+    if (undefinedFunctionalArgs.length > 0) {
+      this.log(
+        printError(
+          `looks like your command has functional variables that haven't been defined \n\nplease define the functions below in the '.boilerplate' directory`
+        )
+      );
+      undefinedFunctionalArgs.forEach((arg) =>
+        this.log(print(`  - ${arg}`, "red"))
+      );
+      return;
+    }
+
+    /* 6. If all template variables have been defined then check if the user has provided all the args. 
       If some are missing then first check if the args have default values.
       If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the command help prompt
     */
@@ -111,7 +130,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     }
 
     // match user input args to defined args
-    const requiredArgs: ArgsObject = variables.reduce(
+    const requiredArgs: ArgsObject = templateArgs.reduce(
       (obj, arg) => ({ ...obj, [arg]: { ...definedArgs[arg], name: arg } }),
       {}
     );
@@ -134,7 +153,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       return;
     }
 
-    // 6. Prompt the user where to save the boilerplate files and/or folders (and verify the directory exists)
+    // 7. Prompt the user where to save the boilerplate files and/or folders (and verify the directory exists)
     const { source }: Prompt = await inquirer.prompt([
       {
         name: "source",
@@ -153,7 +172,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       return this.log(printError(`'${formattedSource}' does not exist`));
     }
 
-    // 7. generate the files and folders, switching out all the arg placeholders with the user-provided values
+    // 8. generate the files and folders, switching out all the arg placeholders with the user-provided values
     const argInputs = validatedArgs.reduce(
       (output, { name, value }) => ({ ...output, [name!]: value }),
       {}

@@ -7,8 +7,9 @@ import {
   mkdirSync,
   writeFileSync,
 } from "fs";
+import path from "path";
 import read from "read-data";
-import { uniq, chunk, fromPairs } from "lodash";
+import { uniq, chunk, fromPairs, cloneDeep } from "lodash";
 import pipe from "lodash/fp/pipe";
 
 // utils
@@ -17,9 +18,19 @@ import { emoji } from "../utils";
 // types
 import { Arg, ArgsObject } from "../types";
 
+interface Args {
+  [key: string]: string;
+}
+
+interface SplitArgs {
+  [key: string]: string[];
+}
+
 const extractVariable = (variable: string) => {
   return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
 };
+
+const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
 
 const replaceVariables = (
   content: string,
@@ -27,7 +38,7 @@ const replaceVariables = (
 ): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
   const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
-  const whitespaceRightOfWord = /(?<=[^\W])\s+(?=\|\>)/g; // 'WORD   |>'
+  const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
   const contentWithoutWhitespaces = content
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
@@ -213,4 +224,65 @@ export const generateBoilerplate = (
     });
   };
   makeFilesFolders(rootPath);
+};
+
+export const splitArgs = (variables: string[]) => {
+  return variables.reduce(
+    (args: SplitArgs, arg) => {
+      const output = cloneDeep(args);
+      if (containsBrackets(arg)) {
+        output.functionalArgs.push(arg);
+      } else {
+        output.templateArgs.push(arg);
+      }
+      return output;
+    },
+    { templateArgs: [], functionalArgs: [] }
+  );
+};
+
+const extractFunctionName = (fn: string) => {
+  const bracket = containsBrackets(fn);
+  const bracketIndex = bracket!.index!;
+  return fn.slice(0, bracketIndex);
+};
+
+export const undefinedFunctions = (args: string[]) => {
+  const root = readdirSync("./.boilerplate");
+  const missingFunctions = args.filter((arg) => {
+    return !root.find((file) => file === `${extractFunctionName(arg)}.js`);
+  });
+  return missingFunctions.map((fn) => `${extractFunctionName(fn)}.js`);
+};
+
+const extractInputArgs = (fn: string) => {
+  return fn
+    .replace(extractFunctionName(fn), "") // remove function name
+    .slice(1, -1) // remove enclosing () brackets
+    .split(",")
+    .map((fn) => fn.trim());
+};
+
+export const extractFunctionInputArgs = (functions: string[]) => {
+  const inputArgs = functions
+    .map((fn) => extractInputArgs(fn))
+    .flat()
+    .filter((arg) => arg.length > 0); // exclude empty strings (functions with no args)
+  return uniq(inputArgs);
+};
+
+export const getFunctionValues = (functions: string[], args: Args) => {
+  return functions.reduce((output, fn) => {
+    const functionName = extractFunctionName(fn);
+    const inputArgs = extractInputArgs(fn).map((val) => args[val]);
+
+    const functionPath = path.relative(
+      __dirname,
+      `.boilerplate/${functionName}.js`
+    );
+
+    const templateFunction = require(functionPath);
+    const result = templateFunction(...inputArgs);
+    return { ...output, [fn]: result };
+  }, {});
 };

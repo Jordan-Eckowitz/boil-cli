@@ -249,3 +249,16 @@ export const undefinedFunctions = (args: string[]) => {
   });
   return missingFunctions.map((fn) => `${extractFunctionName(fn)}.js`);
 };
+
+export const extractFunctionInputArgs = (functions: string[]) => {
+  const inputArgs = functions
+    .map((fn) =>
+      fn
+        .replace(extractFunctionName(fn), "") // remove function name
+        .slice(1, -1) // remove enclosing () brackets
+        .split(",")
+        .map((fn) => fn.trim())
+    )
+    .flat();
+  return uniq(inputArgs);
+};

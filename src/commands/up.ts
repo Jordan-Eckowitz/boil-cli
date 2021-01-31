@@ -20,6 +20,7 @@ import {
   dirExists,
   splitArgs,
   undefinedFunctions,
+  extractFunctionInputArgs,
 } from "./up.spec";
 
 // types
@@ -129,8 +130,12 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       );
     }
 
+    // extract functional input args, e.g. greeting(name, surname) -> name & surname
+    const functionInputArgs = extractFunctionInputArgs(functionalArgs);
+
     // match user input args to defined args
-    const requiredArgs: ArgsObject = templateArgs.reduce(
+    const allRequiredArgs = [...templateArgs, ...functionInputArgs];
+    const requiredArgs: ArgsObject = allRequiredArgs.reduce(
       (obj, arg) => ({ ...obj, [arg]: { ...definedArgs[arg], name: arg } }),
       {}
     );

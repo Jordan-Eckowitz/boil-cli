@@ -19,9 +19,9 @@ const generateFilesAndFolders = () => {
   mkdirSync(`${rootPath}/component`);
   // create local args yml file
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
-  // folder with template variable name
+  // folder with template arg name
   mkdirSync(`${rootPath}/component/<| name |>`);
-  // file with template variable name and filetype
+  // file with template arg name and filetype
   writeFileSync(
     `${rootPath}/component/<| name |>/<| name |>.<| filetype |>`,
     placeholderContent

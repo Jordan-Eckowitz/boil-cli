@@ -11,7 +11,7 @@ import {
   commandArgsTable,
 } from "../utils";
 import {
-  commandVariables,
+  commandArgs,
   localAndGlobalArgs,
   userProvidedArgs,
   compareUserRequiredArgs,
@@ -77,19 +77,19 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       );
     }
 
-    // 3. Extract all template variables (<|*|>) from the command directory
-    const variables = commandVariables(command);
-    const { templateArgs, functionalArgs } = splitArgs(variables);
+    // 3. Extract all template args (<|*|>) from the command directory
+    const allArgs = commandArgs(command);
+    const { templateArgs, functionalArgs } = splitArgs(allArgs);
 
-    // 4. Check the local args and global args to see if all template variables are defined - if some are not then prompt the user which are missing and throw an error
+    // 4. Check the local args and global args to see if all template args are defined - if some are not then prompt the user which are missing and throw an error
     const definedArgs: ArgsObject = localAndGlobalArgs(command);
     const undefinedTemplateArgs = templateArgs.filter(
-      (variable) => !Object.keys(definedArgs).includes(variable)
+      (arg) => !Object.keys(definedArgs).includes(arg)
     );
     if (undefinedTemplateArgs.length > 0) {
       this.log(
         printError(
-          `looks like your command has template variables that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
+          `looks like your command has template args that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
         )
       );
       undefinedTemplateArgs.forEach((arg) =>
@@ -103,7 +103,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     if (undefinedFunctionalArgs.length > 0) {
       this.log(
         printError(
-          `looks like your command has functional variables that haven't been defined \n\nplease define the functions below in the '.boilerplate' directory`
+          `looks like your command has functional args that haven't been defined \n\nplease define the functions below in the '.boilerplate' directory`
         )
       );
       undefinedFunctionalArgs.forEach((arg) =>
@@ -112,7 +112,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       return;
     }
 
-    /* 6. If all template variables have been defined then check if the user has provided all the args. 
+    /* 6. If all template args have been defined then check if the user has provided all the args. 
       If some are missing then first check if the args have default values.
       If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the command help prompt
     */

@@ -255,15 +255,17 @@ export const undefinedFunctions = (args: string[]) => {
   return missingFunctions.map((fn) => `${extractFunctionName(fn)}.js`);
 };
 
+const extractInputArgs = (fn: string) => {
+  return fn
+    .replace(extractFunctionName(fn), "") // remove function name
+    .slice(1, -1) // remove enclosing () brackets
+    .split(",")
+    .map((fn) => fn.trim());
+};
+
 export const extractFunctionInputArgs = (functions: string[]) => {
   const inputArgs = functions
-    .map((fn) =>
-      fn
-        .replace(extractFunctionName(fn), "") // remove function name
-        .slice(1, -1) // remove enclosing () brackets
-        .split(",")
-        .map((fn) => fn.trim())
-    )
+    .map((fn) => extractInputArgs(fn))
     .flat()
     .filter((arg) => arg.length > 0); // exclude empty strings (functions with no args)
   return uniq(inputArgs);
@@ -272,12 +274,7 @@ export const extractFunctionInputArgs = (functions: string[]) => {
 export const getFunctionValues = (functions: string[], args: Args) => {
   return functions.reduce((output, fn) => {
     const functionName = extractFunctionName(fn);
-    const inputArgs = fn
-      .replace(functionName, "")
-      .slice(1, -1)
-      .split(",")
-      .map((arg) => arg.trim())
-      .map((val) => args[val]);
+    const inputArgs = extractInputArgs(fn).map((val) => args[val]);
 
     const functionPath = path.relative(
       __dirname,

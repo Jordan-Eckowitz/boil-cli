@@ -26,15 +26,15 @@ interface SplitArgs {
   [key: string]: string[];
 }
 
-const extractVariable = (variable: string) => {
-  return variable.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+const extractArg = (arg: string) => {
+  return arg.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
 };
 
 const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
 
-const replaceVariables = (
+const replaceArgs = (
   content: string,
-  varPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
+  argPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
   const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
@@ -43,67 +43,65 @@ const replaceVariables = (
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
 
-  // replace variable placeholders with values
-  const newContent = Object.keys(varPlaceholderValues).reduce(
+  // replace arg placeholders with values
+  const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
-      return output.replace(`<|${arg}|>`, varPlaceholderValues[arg]);
+      return output.replace(`<|${arg}|>`, argPlaceholderValues[arg]);
     },
     contentWithoutWhitespaces
   );
 
   // 'replace' only finds the first match ('replaceAll' not yet supported)
-  //  so, keep running this function recursively until no template variables remain
-  if (extractVariable(newContent)) {
-    return replaceVariables(newContent, varPlaceholderValues);
+  //  so, keep running this function recursively until no template args remain
+  if (extractArg(newContent)) {
+    return replaceArgs(newContent, argPlaceholderValues);
   }
   return newContent;
 };
 
 // regex looks for anything between triangles (<|*|>)
-const extractVariablesArray = (variable: string) => {
-  const templateVariable = extractVariable(variable);
+const extractArgsArray = (arg: string) => {
+  const templateArg = extractArg(arg);
   // trim whitespaces
-  if (templateVariable) {
-    return templateVariable.map((variable) => variable.trim());
+  if (templateArg) {
+    return templateArg.map((arg) => arg.trim());
   }
   return [];
 };
 
-export const commandVariables = (command: string) => {
+export const commandArgs = (command: string) => {
   const rootPath = `./.boilerplate/${command}`;
-  const variables: string[] = [];
+  const args: string[] = [];
 
-  // recursively look for template variables (<|*|>) in directory names, file names and within files
-  const variablesFromDirectoriesFilenamesFilecontent = (path: string) => {
+  // recursively look for template args (<|*|>) in directory names, file names and within files
+  const argsFromDirectoriesFilenamesFileContent = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
     directoriesAndFiles.forEach((dirOrFile) => {
-      extractVariablesArray(dirOrFile).forEach((variable) => {
-        variables.push(variable);
+      extractArgsArray(dirOrFile).forEach((arg) => {
+        args.push(arg);
         const nestedFile = `${path}/${dirOrFile}`;
-        // if a file then extract template variables from its contents
+        // if a file then extract template args from its contents
         if (lstatSync(nestedFile).isFile()) {
           const data = readFileSync(nestedFile, "utf8");
-          extractVariablesArray(data).forEach((variable) =>
-            variables.push(variable)
-          );
+          extractArgsArray(data).forEach((arg) => args.push(arg));
         }
       });
-      // if nested directories exist then recursively look for template variables at that path
+      // if nested directories exist then recursively look for template args at that path
       const nestedPath = `${path}/${dirOrFile}`;
       if (lstatSync(nestedPath).isDirectory()) {
         const nestedDirectories = readdirSync(nestedPath);
         if (nestedDirectories) {
-          variablesFromDirectoriesFilenamesFilecontent(nestedPath);
+          argsFromDirectoriesFilenamesFileContent(nestedPath);
         }
       }
     });
   };
 
-  // start looking for variables in the command root path
-  variablesFromDirectoriesFilenamesFilecontent(rootPath);
+  // start looking for args in the command root path
+  argsFromDirectoriesFilenamesFileContent(rootPath);
 
-  // return array of unique variable names
-  return uniq(variables);
+  // return array of unique arg names
+  return uniq(args);
 };
 
 export const localAndGlobalArgs = (command: string) => {
@@ -163,7 +161,7 @@ export const validateArgs = (comparedArgs: Arg[], requiredArgs: ArgsObject) => {
     }
     const validInputAgainstOptions = output.options
       ? !!output.options.find((option) => option === output.value)
-      : !!output.value; // if the value is undefined then this variable will be false
+      : !!output.value; // if the value is undefined then this arg will be false
     return { ...output, valid: validInputAgainstOptions };
   });
 };
@@ -176,7 +174,7 @@ export const generateBoilerplate = (
   args: { [key: string]: string }
 ) => {
   const rootPath = `./.boilerplate/${command}`;
-  const withValues = (str: string) => replaceVariables(str, args);
+  const withValues = (str: string) => replaceArgs(str, args);
 
   const makeFilesFolders = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
@@ -186,18 +184,19 @@ export const generateBoilerplate = (
         const stats = lstatSync(nestedPath);
         const [isFile, isDirectory] = [stats.isFile(), stats.isDirectory()];
         const writePath = withValues(nestedPath.replace(rootPath, source));
+        const formattedPath = writePath.replace("//", "/");
         const successMsg = () => {
           return console.log(
-            `${emoji(":white_check_mark:")} writing: ${writePath}`
+            `${emoji(":white_check_mark:")} writing: ${formattedPath}`
           );
         };
         const failMsg = () => {
           return console.log(
-            `${emoji(":no_entry:")} '${writePath}' already exists`
+            `${emoji(":no_entry:")} '${formattedPath}' already exists`
           );
         };
 
-        // if directory then replace any variables in folder name with value
+        // if directory then replace any args in folder name with value
         // also, recursively callback 'makeFilesFolders' to look for any nested files/folders
         if (isDirectory) {
           if (existsSync(writePath)) {
@@ -209,8 +208,8 @@ export const generateBoilerplate = (
           }
         }
 
-        // if file then replace any variables in file name with value
-        // also, write the file contents (also replacing any variables with values)
+        // if file then replace any args in file name with value
+        // also, write the file contents (also replacing any args with values)
         if (isFile) {
           if (existsSync(writePath)) {
             failMsg();
@@ -226,10 +225,10 @@ export const generateBoilerplate = (
   makeFilesFolders(rootPath);
 };
 
-export const splitArgs = (variables: string[]) => {
-  return variables.reduce(
-    (args: SplitArgs, arg) => {
-      const output = cloneDeep(args);
+export const splitArgs = (args: string[]) => {
+  return args.reduce(
+    (argsObject: SplitArgs, arg) => {
+      const output = cloneDeep(argsObject);
       if (containsBrackets(arg)) {
         output.functionalArgs.push(arg);
       } else {

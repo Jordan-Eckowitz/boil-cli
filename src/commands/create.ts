@@ -9,9 +9,9 @@ export default class Create extends Command {
 
   static flags = {
     help: flags.help({ char: "h" }),
-    variables: flags.string({
-      char: "v",
-      description: "local template variables",
+    args: flags.string({
+      char: "a",
+      description: "local template args",
     }),
   };
 
@@ -19,9 +19,9 @@ export default class Create extends Command {
 
   static examples = [
     `$ boil create ${print("person", "blue")} ${print(
-      "--variables"
+      "--args"
     )} name,surname,age`,
-    `$ boil create ${print("person", "blue")} ${print("-v")} name,surname,age`,
+    `$ boil create ${print("person", "blue")} ${print("-a")} name,surname,age`,
   ];
 
   async run() {
@@ -52,7 +52,7 @@ export default class Create extends Command {
     }
 
     // 4. generate template
-    const variables = flags.variables ? flags.variables.split(",") : [];
-    generateTemplate(name, variables);
+    const args = flags.args ? flags.args.split(",") : [];
+    generateTemplate(name, args);
   }
 }

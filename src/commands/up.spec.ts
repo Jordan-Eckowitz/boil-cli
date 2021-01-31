@@ -7,6 +7,7 @@ import {
   mkdirSync,
   writeFileSync,
 } from "fs";
+import path from "path";
 import read from "read-data";
 import { uniq, chunk, fromPairs, cloneDeep } from "lodash";
 import pipe from "lodash/fp/pipe";
@@ -16,6 +17,10 @@ import { emoji } from "../utils";
 
 // types
 import { Arg, ArgsObject } from "../types";
+
+interface Args {
+  [key: string]: string;
+}
 
 interface SplitArgs {
   [key: string]: string[];
@@ -262,4 +267,25 @@ export const extractFunctionInputArgs = (functions: string[]) => {
     .flat()
     .filter((arg) => arg.length > 0); // exclude empty strings (functions with no args)
   return uniq(inputArgs);
+};
+
+export const getFunctionValues = (functions: string[], args: Args) => {
+  return functions.reduce((output, fn) => {
+    const functionName = extractFunctionName(fn);
+    const inputArgs = fn
+      .replace(functionName, "")
+      .slice(1, -1)
+      .split(",")
+      .map((arg) => arg.trim())
+      .map((val) => args[val]);
+
+    const functionPath = path.relative(
+      __dirname,
+      `.boilerplate/${functionName}.js`
+    );
+
+    const templateFunction = require(functionPath);
+    const result = templateFunction(...inputArgs);
+    return { ...output, [fn]: result };
+  }, {});
 };

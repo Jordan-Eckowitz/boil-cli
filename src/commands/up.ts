@@ -21,6 +21,7 @@ import {
   splitArgs,
   undefinedFunctions,
   extractFunctionInputArgs,
+  getFunctionValues,
 } from "./up.spec";
 
 // types
@@ -183,6 +184,10 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       {}
     );
 
-    generateBoilerplate(command, formattedSource, argInputs);
+    // call functional arguments and record values
+    const functionalValues = getFunctionValues(functionalArgs, argInputs);
+    const allArgInputValues = { ...argInputs, ...functionalValues };
+
+    generateBoilerplate(command, formattedSource, allArgInputValues);
   }
 }

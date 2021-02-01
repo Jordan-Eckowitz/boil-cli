@@ -21,7 +21,7 @@ export const printError = (msg: string) => {
 export const bold = (msg: string) => chalk.bold(msg);
 
 // used to output a string of multiple emojis
-export const emojis = (arr: string[] = []) => {
+export const emojis = (arr: string[]) => {
   return arr.reduce((output, currentEmoji) => {
     return (output += emoji(currentEmoji));
   }, "");

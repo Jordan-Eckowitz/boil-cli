@@ -8,6 +8,7 @@
     "quotes": "off",
     "indent": "off",
     "no-console": "off",
+    "valid-jsdoc": "off",
     "comma-dangle": "off",
     "arrow-parens": "off",
     "no-return-assign": "off",

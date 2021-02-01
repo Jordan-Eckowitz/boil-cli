@@ -1,9 +1,15 @@
 // packages
 import { expect, test } from "@oclif/test";
 import { writeFileSync } from "fs";
+import shell from "shelljs";
 
 // utils
 import { removeBoilerplateFolder } from "../utils";
+
+/** For the `up` command `static strict = false` to allow any user inputs.
+ *  This results in the `.command([])` method not always being able to parse the args.
+ *  A workaround is to run the command through the shell directly. */
+const exec = (cmd: string) => shell.exec(`bin/run up ${cmd}`, { silent: true });
 
 describe("up", () => {
   before(async function () {
@@ -61,4 +67,11 @@ describe("up", () => {
         "all your arg flags should begin with --(name) or -(shorthand)"
       );
     });
+
+  test
+    .add("val", exec("component"))
+    .do(({ val }) =>
+      expect(val).to.contain("your args don't match the command requirements")
+    )
+    .it("check user has provided all required args");
 });

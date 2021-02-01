@@ -1,5 +1,5 @@
 // packages
-const del = require("del"); // delete folder and all contents within it
+import del from "del";
 import { readdirSync } from "fs";
 
 const doesBoilerplateDirExist = () => {

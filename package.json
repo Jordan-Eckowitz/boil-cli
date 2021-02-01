@@ -29,6 +29,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.17.51",
     "chai": "^4.2.0",
+    "del": "^6.0.0",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
@@ -66,9 +67,9 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "TS_NODE_FILES=true nyc --reporter=html --reporter=text --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "lint": "eslint src --ext .ts,.js"
+    "lint": "eslint . --ext .ts,.js --ignore-pattern coverage"
   },
   "husky": {
     "hooks": {

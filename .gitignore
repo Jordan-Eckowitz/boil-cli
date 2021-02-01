@@ -9,3 +9,4 @@ node_modules
 
 # boil exclusions
 .boilerplate
+coverage

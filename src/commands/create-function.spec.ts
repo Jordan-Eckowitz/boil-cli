@@ -2,7 +2,7 @@
 import { existsSync, writeFileSync } from "fs";
 
 // utils
-import { emoji } from "../../lib/utils";
+import { emoji } from "../utils";
 
 const rootPath = "./.boilerplate";
 

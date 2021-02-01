@@ -46,26 +46,4 @@ describe("create-function", () => {
         );
       }
     );
-
-  // test
-  //   .stdout()
-  //   .command(["create-function", "another-example", "--args", "abc"])
-  //   .it("create a new template with --args", () => {
-  //     const data = readFileSync(
-  //       "./.boilerplate/another-example/local.args.yml",
-  //       "utf8"
-  //     );
-  //     expect(data).to.contain("abc");
-  //   });
-
-  // test
-  //   .stdout()
-  //   .command(["create-function", "yet-another-example", "-a", "abc"])
-  //   .it("create a new template with shorthand for args (-a)", () => {
-  //     const data = readFileSync(
-  //       "./.boilerplate/yet-another-example/local.args.yml",
-  //       "utf8"
-  //     );
-  //     expect(data).to.contain("abc");
-  //   });
 });

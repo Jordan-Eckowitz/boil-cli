@@ -112,7 +112,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       return;
     }
 
-    /* 6. If all template args have been defined then check if the user has provided all the args. 
+    /* 6. If all template args have been defined then check if the user has provided all the args.
       If some are missing then first check if the args have default values.
       If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the command help prompt
     */
@@ -160,15 +160,23 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     }
 
     // 7. Prompt the user where to save the boilerplate files and/or folders (and verify the directory exists)
-    const { source }: Prompt = await inquirer.prompt([
-      {
-        name: "source",
-        message:
-          "where would you like to save the boilerplate files and/or folders?",
-        type: "input",
-        default: "./",
-      },
-    ]);
+    let source;
+
+    // bypass prompt for tests
+    if (process.env.TS_NODE_FILES) {
+      source = "./";
+    } else {
+      const promptValue: Prompt = await inquirer.prompt([
+        {
+          name: "source",
+          message:
+            "where would you like to save the boilerplate files and/or folders?",
+          type: "input",
+          default: "./",
+        },
+      ]);
+      source = promptValue.source;
+    }
 
     // if source is missing root ('./...') then add it
     const formattedSource =

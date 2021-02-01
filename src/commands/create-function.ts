@@ -21,7 +21,6 @@ export default class Create extends Command {
   async run() {
     const {
       args: { name },
-      flags,
     } = this.parse(Create);
 
     // 1. check that '.boilerplate' directory exists

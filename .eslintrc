@@ -2,5 +2,20 @@
   "extends": [
     "oclif",
     "oclif-typescript"
-  ]
+  ],
+  "rules": {
+    "semi": "off",
+    "quotes": "off",
+    "indent": "off",
+    "no-console": "off",
+    "valid-jsdoc": "off",
+    "comma-dangle": "off",
+    "arrow-parens": "off",
+    "no-return-assign": "off",
+    "no-useless-escape": "off",
+    "operator-linebreak": "off",
+    "object-curly-spacing": "off",
+    "no-implicit-coercion": "off",
+    "unicorn/prefer-starts-ends-with": "off"
+  }
 }

@@ -160,15 +160,23 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     }
 
     // 7. Prompt the user where to save the boilerplate files and/or folders (and verify the directory exists)
-    const { source }: Prompt = await inquirer.prompt([
-      {
-        name: "source",
-        message:
-          "where would you like to save the boilerplate files and/or folders?",
-        type: "input",
-        default: "./",
-      },
-    ]);
+    let source;
+
+    // bypass prompt for tests
+    if (process.env.TS_NODE_FILES) {
+      source = "./";
+    } else {
+      const promptValue: Prompt = await inquirer.prompt([
+        {
+          name: "source",
+          message:
+            "where would you like to save the boilerplate files and/or folders?",
+          type: "input",
+          default: "./",
+        },
+      ]);
+      source = promptValue.source;
+    }
 
     // if source is missing root ('./...') then add it
     const formattedSource =

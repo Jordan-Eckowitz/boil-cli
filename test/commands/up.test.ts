@@ -4,7 +4,7 @@ import { writeFileSync } from "fs";
 import shell from "shelljs";
 
 // utils
-import { removeBoilerplateFolder } from "../utils";
+import { removeBoilerplateFolder, removeExampleTemplate } from "../utils";
 
 /** For the `up` command `static strict = false` to allow any user inputs.
  *  This results in the `.command([])` method not always being able to parse the args.
@@ -14,6 +14,10 @@ const exec = (cmd: string) => shell.exec(`bin/run up ${cmd}`, { silent: true });
 describe("up", () => {
   before(async function () {
     await removeBoilerplateFolder();
+  });
+
+  after(async function () {
+    await removeExampleTemplate();
   });
 
   test
@@ -74,4 +78,9 @@ describe("up", () => {
       expect(val).to.contain("your args don't match the command requirements")
     )
     .it("check user has provided all required args");
+
+  test
+    .add("val", exec("component --name example"))
+    .do(({ val }) => expect(val).to.contain("writing: ./example/example.js"))
+    .it("generate template");
 });

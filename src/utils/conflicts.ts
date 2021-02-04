@@ -5,6 +5,6 @@ export const boilerplateExists = () => {
   return existsSync(`./.boilerplate`);
 };
 
-export const commandExists = (command: string) => {
-  return existsSync(`./.boilerplate/${command}`);
+export const templateExists = (template: string) => {
+  return existsSync(`./.boilerplate/${template}`);
 };

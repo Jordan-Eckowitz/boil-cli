@@ -69,8 +69,8 @@ const extractArgsArray = (arg: string) => {
   return [];
 };
 
-export const commandArgs = (command: string) => {
-  const rootPath = `./.boilerplate/${command}`;
+export const getTemplateArgs = (template: string) => {
+  const rootPath = `./.boilerplate/${template}`;
   const args: string[] = [];
 
   // recursively look for template args (<|*|>) in directory names, file names and within files
@@ -97,14 +97,14 @@ export const commandArgs = (command: string) => {
     });
   };
 
-  // start looking for args in the command root path
+  // start looking for args in the template root path
   argsFromDirectoriesFilenamesFileContent(rootPath);
 
   // return array of unique arg names
   return uniq(args);
 };
 
-export const localAndGlobalArgs = (command: string) => {
+export const localAndGlobalArgs = (template: string) => {
   const rootPath = `./.boilerplate`;
   let args = {};
 
@@ -116,17 +116,17 @@ export const localAndGlobalArgs = (command: string) => {
   };
 
   const globalPath = `${rootPath}/global.args.yml`;
-  const localPath = `${rootPath}/${command}/local.args.yml`;
+  const localPath = `${rootPath}/${template}/local.args.yml`;
   getArgs(globalPath);
   getArgs(localPath);
   return args;
 };
 
-export const userProvidedArgs = (command: string) => {
+export const userProvidedArgs = (template: string) => {
   const inputs = process.argv;
-  const commandIndex = inputs.indexOf(command);
-  const inputsAfterCommand = inputs.slice(commandIndex + 1);
-  return pipe(chunk, fromPairs)(inputsAfterCommand, 2);
+  const templateIndex = inputs.indexOf(template);
+  const inputsAfterTemplate = inputs.slice(templateIndex + 1);
+  return pipe(chunk, fromPairs)(inputsAfterTemplate, 2);
 };
 
 export const compareUserRequiredArgs = (
@@ -169,11 +169,11 @@ export const validateArgs = (comparedArgs: Arg[], requiredArgs: ArgsObject) => {
 export const dirExists = (path: string) => existsSync(path);
 
 export const generateBoilerplate = (
-  command: string,
+  template: string,
   source: string,
   args: { [key: string]: string }
 ) => {
-  const rootPath = `./.boilerplate/${command}`;
+  const rootPath = `./.boilerplate/${template}`;
   const withValues = (str: string) => replaceArgs(str, args);
 
   const makeFilesFolders = (path: string) => {

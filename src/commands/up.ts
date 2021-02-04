@@ -5,13 +5,13 @@ import * as inquirer from "inquirer";
 // utils
 import {
   boilerplateExists,
-  commandExists,
+  templateExists,
   print,
   printError,
-  commandArgsTable,
+  templateArgsTable,
 } from "../utils";
 import {
-  commandArgs,
+  getTemplateArgs,
   localAndGlobalArgs,
   userProvidedArgs,
   compareUserRequiredArgs,
@@ -32,7 +32,7 @@ interface Prompt {
 }
 
 export default class Up extends Command {
-  static description = "run one of your boilerplate template commands";
+  static description = "generate boilerplate from one of the templates";
 
   static strict = false; // allow any user inputs
 
@@ -42,9 +42,9 @@ export default class Up extends Command {
 
   static args = [
     {
-      name: "command",
+      name: "template",
       required: true,
-      description: `call up a template command defined in the '.boilerplate' directory`,
+      description: `call up a template defined in the '.boilerplate' directory`,
     },
   ];
 
@@ -52,12 +52,12 @@ export default class Up extends Command {
     `$ boil up component ${print("--name")} App ${print("--filetype")} js`,
     `$ boil up component ${print("-n")} App ${print("-ft")} js
 
-run ${print("boil list")} to see all available boilerplate template commands`,
+run ${print("boil list")} to see all available boilerplate templates`,
   ];
 
   async run() {
     const { args } = this.parse(Up);
-    const { command } = args;
+    const { template } = args;
 
     // 1. check that '.boilerplate' directory exists
     if (!boilerplateExists()) {
@@ -68,28 +68,28 @@ run ${print("boil list")} to see all available boilerplate template commands`,
       );
     }
 
-    // 2. If there's no command directory matching the user command then throw an error
-    if (!commandExists(command)) {
+    // 2. If there's no template directory matching the user template then throw an error
+    if (!templateExists(template)) {
       return this.log(
         printError(
-          `looks like there isn't a command called '${command}' in the '.boilerplate' directory`
+          `looks like there isn't a template called '${template}' in the '.boilerplate' directory`
         )
       );
     }
 
-    // 3. Extract all template args (<|*|>) from the command directory
-    const allArgs = commandArgs(command);
+    // 3. Extract all template args (<|*|>) from the template directory
+    const allArgs = getTemplateArgs(template);
     const { templateArgs, functionalArgs } = splitArgs(allArgs);
 
     // 4. Check the local args and global args to see if all template args are defined - if some are not then prompt the user which are missing and throw an error
-    const definedArgs: ArgsObject = localAndGlobalArgs(command);
+    const definedArgs: ArgsObject = localAndGlobalArgs(template);
     const undefinedTemplateArgs = templateArgs.filter(
       (arg) => !Object.keys(definedArgs).includes(arg)
     );
     if (undefinedTemplateArgs.length > 0) {
       this.log(
         printError(
-          `looks like your command has template args that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
+          `looks like your template has template args that haven't been defined \n\nplease define the args below in either global.args.yml or local.args.yml `
         )
       );
       undefinedTemplateArgs.forEach((arg) =>
@@ -103,7 +103,7 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     if (undefinedFunctionalArgs.length > 0) {
       this.log(
         printError(
-          `looks like your command has functional args that haven't been defined \n\nplease define the functions below in the '.boilerplate' directory`
+          `looks like your template has functional args that haven't been defined \n\nplease define the functions below in the '.boilerplate' directory`
         )
       );
       undefinedFunctionalArgs.forEach((arg) =>
@@ -114,9 +114,9 @@ run ${print("boil list")} to see all available boilerplate template commands`,
 
     /* 6. If all template args have been defined then check if the user has provided all the args.
       If some are missing then first check if the args have default values.
-      If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the command help prompt
+      If some args are still missing, or the user picks a value not in the arg options array, then throw an error and show the template help prompt
     */
-    const userArgs = userProvidedArgs(command);
+    const userArgs = userProvidedArgs(template);
 
     // check that user flags begin with either -- or -
     const invalidFlags = Object.keys(userArgs).some(
@@ -154,8 +154,8 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     const notAllValid = validatedArgs.some((arg) => !arg.valid);
 
     if (notAllValid) {
-      this.log(printError(`your args don't match the command requirements`));
-      commandArgsTable(Object.values(requiredArgs), "up", command);
+      this.log(printError(`your args don't match the template requirements`));
+      templateArgsTable(Object.values(requiredArgs), "up", template);
       return;
     }
 
@@ -196,6 +196,6 @@ run ${print("boil list")} to see all available boilerplate template commands`,
     const functionalValues = getFunctionValues(functionalArgs, argInputs);
     const allArgInputValues = { ...argInputs, ...functionalValues };
 
-    generateBoilerplate(command, formattedSource, allArgInputValues);
+    generateBoilerplate(template, formattedSource, allArgInputValues);
   }
 }

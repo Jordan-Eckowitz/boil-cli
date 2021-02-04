@@ -1,3 +1,3 @@
 export { print, printError, bold, emoji, emojis } from "./logging";
-export { boilerplateExists, commandExists } from "./conflicts";
-export { commandArgsTable } from "./help";
+export { boilerplateExists, templateExists } from "./conflicts";
+export { templateArgsTable } from "./help";

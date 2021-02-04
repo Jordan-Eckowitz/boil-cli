@@ -1,12 +1,12 @@
 // packages
 import { cli } from "cli-ux";
 
-export const commandArgsTable = (
+export const templateArgsTable = (
   array: object[],
   trigger: string,
-  command: string
+  template: string
 ) => {
-  console.log(`\nboil ${trigger} ${command} ARGS\n`);
+  console.log(`\nboil ${trigger} ${template} ARGS\n`);
   return cli.table(array, {
     name: { minWidth: 15, header: "Name [--]" },
     shorthand: { minWidth: 20, header: "Shorthand [-]" },

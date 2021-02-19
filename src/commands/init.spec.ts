@@ -15,4 +15,10 @@ name: # arg will be called using --name
   description: component name # used in help menu
 `;
 
-export const placeholderContent = `<|name|> = "hello world"`;
+export const placeholderContent = `// <|timestamp()|>
+<|name|> = "hello world"
+`;
+
+export const templateFunctionContent = `module.exports = function () {
+  return Date.now();
+};`;

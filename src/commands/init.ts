@@ -6,7 +6,12 @@ import { Command, flags } from "@oclif/command";
 import { print, printError, emojis, boilerplateExists } from "../utils";
 
 // constants
-import { globalYaml, localYaml, placeholderContent } from "./init.spec";
+import {
+  globalYaml,
+  localYaml,
+  placeholderContent,
+  templateFunctionContent,
+} from "./init.spec";
 
 const rootPath = "./.boilerplate";
 
@@ -15,6 +20,8 @@ const generateFilesAndFolders = () => {
   mkdirSync(rootPath);
   // create global args yml file
   writeFileSync(`${rootPath}/global.args.yml`, globalYaml);
+  // create template function
+  writeFileSync(`${rootPath}/timestamp.js`, templateFunctionContent);
   // create component directory (example template out-of-the-box)
   mkdirSync(`${rootPath}/component`);
   // create local args yml file

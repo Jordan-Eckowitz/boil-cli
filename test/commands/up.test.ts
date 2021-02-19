@@ -35,7 +35,7 @@ describe("up", () => {
     .command(["up", "example"])
     .it("if there's no matching command then throw an error", (ctx) => {
       expect(ctx.stdout).to.contain(
-        "looks like there isn't a command called 'example'"
+        "looks like there isn't a template called 'example'"
       );
     });
 
@@ -46,7 +46,7 @@ describe("up", () => {
     .command(["up", "bad-example"])
     .it("check all template args have been defined", (ctx) => {
       expect(ctx.stdout).to.contain(
-        "looks like your command has template args that haven't been defined"
+        "looks like your template has template args that haven't been defined"
       );
     });
 
@@ -59,7 +59,7 @@ describe("up", () => {
     .command(["up", "another-bad-example"])
     .it("check all functional args have been defined", (ctx) => {
       expect(ctx.stdout).to.contain(
-        "looks like your command has functional args that haven't been defined"
+        "looks like your template has functional args that haven't been defined"
       );
     });
 
@@ -75,7 +75,7 @@ describe("up", () => {
   test
     .add("val", exec("component"))
     .do(({ val }) =>
-      expect(val).to.contain("your args don't match the command requirements")
+      expect(val).to.contain("your args don't match the template requirements")
     )
     .it("check user has provided all required args");
 

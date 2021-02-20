@@ -11,6 +11,7 @@ import {
   localYaml,
   placeholderContent,
   templateFunctionContent,
+  readmeContent,
 } from "./init.spec";
 
 const rootPath = "./.boilerplate";
@@ -18,6 +19,8 @@ const rootPath = "./.boilerplate";
 const generateFilesAndFolders = () => {
   // create .boilerplate folder
   mkdirSync(rootPath);
+  // create readme
+  writeFileSync(`${rootPath}/readme.txt`, readmeContent);
   // create global args yml file
   writeFileSync(`${rootPath}/global.args.yml`, globalYaml);
   // create template function

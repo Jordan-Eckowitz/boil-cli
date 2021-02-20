@@ -1,7 +1,10 @@
-boil-cli-tool
-=============
+# About
 
-CLI tool for generating boilerplate files and folders
+<img src="./boil-logo.svg" height="60" />
+
+A boilerplate template manager and generator
+
+**Check out the full documentation here:** https://jordan-eckowitz.github.io/boil-cli-docs
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/boil-cli-tool.svg)](https://npmjs.org/package/boil-cli-tool)
@@ -9,10 +12,13 @@ CLI tool for generating boilerplate files and folders
 [![License](https://img.shields.io/npm/l/boil-cli-tool.svg)](https://github.com/Jordan-Eckowitz/boil-cli/blob/master/package.json)
 
 <!-- toc -->
+* [About](#about)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g boil-cli-tool
@@ -26,7 +32,9 @@ USAGE
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
 * [`boil create [NAME]`](#boil-create-name)
 * [`boil create-function [NAME]`](#boil-create-function-name)

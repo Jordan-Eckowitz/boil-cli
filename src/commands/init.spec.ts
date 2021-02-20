@@ -19,6 +19,10 @@ export const placeholderContent = `// <|timestamp()|>
 <|name|> = "hello world"
 `;
 
-export const templateFunctionContent = `module.exports = function () {
+export const templateFunctionContent = `// this is a template function - it can be invoked in templates using <| timestamp() |>
+// see here for more details: https://jordan-eckowitz.github.io/boil-cli-docs/how-it-works/#template-functions
+module.exports = function () {
   return Date.now();
 };`;
+
+export const readmeContent = `check out the documentation here: https://jordan-eckowitz.github.io/boil-cli-docs`;

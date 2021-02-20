@@ -1,6 +1,6 @@
 {
   "name": "boil-cli-tool",
-  "description": "CLI tool for generating boilerplate files and folders",
+  "description": "CLI tool - boilerplate template manager and generator",
   "version": "0.0.0",
   "author": "Jordan-Eckowitz @Jordan-Eckowitz",
   "bin": {
@@ -51,9 +51,14 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/Jordan-Eckowitz/boil-cli",
+  "homepage": "https://jordan-eckowitz.github.io/boil-cli-docs",
   "keywords": [
-    "oclif"
+    "cli",
+    "template",
+    "boilerplate",
+    "generator",
+    "boilerplate-template",
+    "boilerplate-application"
   ],
   "license": "MIT",
   "main": "lib/index.js",

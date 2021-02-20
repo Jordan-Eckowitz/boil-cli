@@ -1,7 +1,7 @@
 {
   "name": "boil-cli-tool",
   "description": "CLI tool - boilerplate template manager and generator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Jordan-Eckowitz @Jordan-Eckowitz",
   "bin": {
     "boil": "./bin/run"

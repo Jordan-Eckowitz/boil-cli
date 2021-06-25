@@ -13,7 +13,7 @@ import { uniq, chunk, fromPairs, cloneDeep } from "lodash";
 import pipe from "lodash/fp/pipe";
 
 // utils
-import { emoji } from "../utils";
+import { emoji, escapeRegExp } from "../utils";
 
 // types
 import { Arg, ArgsObject } from "../types";
@@ -27,7 +27,13 @@ interface SplitArgs {
 }
 
 const extractArg = (arg: string) => {
-  return arg.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+  const regex = new RegExp(
+    `(?<=${escapeRegExp(global.BEGIN_SEQ)})(.*?)(?=${escapeRegExp(
+      global.END_SEQ
+    )})`,
+    "g"
+  );
+  return arg.match(regex);
 };
 
 const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
@@ -37,8 +43,16 @@ const replaceArgs = (
   argPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
-  const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
-  const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
+  // const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
+  const whitespaceLeftOfWord = new RegExp(
+    `(?<=${escapeRegExp(global.BEGIN_SEQ)})\\s+(?=[^\\W])`,
+    "g"
+  ); // '<|   WORD'
+  // const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
+  const whitespaceRightOfWord = new RegExp(
+    `(?<=[^\\W]|\\))\\s+(?=${escapeRegExp(global.END_SEQ)})`,
+    "g"
+  ); // 'WORD   |>'  OR  ')   |>' (for functions)
   const contentWithoutWhitespaces = content
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
@@ -46,7 +60,10 @@ const replaceArgs = (
   // replace arg placeholders with values
   const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
-      return output.replace(`<|${arg}|>`, argPlaceholderValues[arg]);
+      return output.replace(
+        `${global.BEGIN_SEQ}${arg}${global.END_SEQ}`,
+        argPlaceholderValues[arg]
+      );
     },
     contentWithoutWhitespaces
   );
@@ -120,6 +137,14 @@ export const localAndGlobalArgs = (template: string) => {
   getArgs(globalPath);
   getArgs(localPath);
   return args;
+};
+
+export const getEscapeSequence = (template: string) => {
+  const args = localAndGlobalArgs(template) as any;
+  return {
+    begin: args.$begin.default ?? "<|",
+    end: args.$end.default ?? "|>",
+  };
 };
 
 export const userProvidedArgs = (template: string) => {

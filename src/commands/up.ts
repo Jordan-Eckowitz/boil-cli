@@ -22,6 +22,7 @@ import {
   undefinedFunctions,
   extractFunctionInputArgs,
   getFunctionValues,
+  getEscapeSequence,
 } from "./up.spec";
 
 // types
@@ -76,6 +77,11 @@ run ${print("boil list")} to see all available boilerplate templates`,
         )
       );
     }
+
+    // 2.1 Get the configured/default escape sequence
+    const { begin, end } = getEscapeSequence(template);
+    global.BEGIN_SEQ = begin;
+    global.END_SEQ = end;
 
     // 3. Extract all template args (<|*|>) from the template directory
     const allArgs = getTemplateArgs(template);

@@ -15,7 +15,7 @@ const successMsg = (msg: string) => {
 };
 
 export const generateTemplateFunction = (name: string) => {
-  const content = `// usage in templates: <| ${name}(arg1, arg2, ...) |>
+  const content = `// usage in templates: ${global.BEGIN_SEQ} ${name}(arg1, arg2, ...) ${global.END_SEQ}
 module.exports = function (/* any args incl. local & global template args */) {
   // insert code here
 };

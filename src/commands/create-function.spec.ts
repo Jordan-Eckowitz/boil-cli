@@ -3,6 +3,7 @@ import { existsSync, writeFileSync } from "fs";
 
 // utils
 import { emoji } from "../utils";
+import { BEGIN_ESCAPE, END_ESCAPE } from "./init.spec";
 
 const rootPath = "./.boilerplate";
 
@@ -15,7 +16,7 @@ const successMsg = (msg: string) => {
 };
 
 export const generateTemplateFunction = (name: string) => {
-  const content = `// usage in templates: <| ${name}(arg1, arg2, ...) |>
+  const content = `// usage in templates: ${BEGIN_ESCAPE} ${name}(arg1, arg2, ...) ${END_ESCAPE}
 module.exports = function (/* any args incl. local & global template args */) {
   // insert code here
 };

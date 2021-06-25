@@ -5,6 +5,7 @@ import shell from "shelljs";
 
 // utils
 import { removeBoilerplateFolder, removeExampleTemplate } from "../utils";
+import { BEGIN_ESCAPE, END_ESCAPE } from "./../../src/commands/init.spec";
 
 /** For the `up` command `static strict = false` to allow any user inputs.
  *  This results in the `.command([])` method not always being able to parse the args.
@@ -42,7 +43,12 @@ describe("up", () => {
   test
     .stdout()
     .command(["create", "bad-example"])
-    .do(() => writeFileSync("./.boilerplate/bad-example/<|name|>.js", ""))
+    .do(() =>
+      writeFileSync(
+        `./.boilerplate/bad-example/${BEGIN_ESCAPE}name${END_ESCAPE}.js`,
+        ""
+      )
+    )
     .command(["up", "bad-example"])
     .it("check all template args have been defined", (ctx) => {
       expect(ctx.stdout).to.contain(
@@ -54,7 +60,10 @@ describe("up", () => {
     .stdout()
     .command(["create", "another-bad-example"])
     .do(() =>
-      writeFileSync("./.boilerplate/another-bad-example/<|example()|>.js", "")
+      writeFileSync(
+        `./.boilerplate/another-bad-example/${BEGIN_ESCAPE}example()${END_ESCAPE}.js`,
+        ""
+      )
     )
     .command(["up", "another-bad-example"])
     .it("check all functional args have been defined", (ctx) => {

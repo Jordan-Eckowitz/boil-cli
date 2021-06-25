@@ -12,6 +12,8 @@ import {
   placeholderContent,
   templateFunctionContent,
   readmeContent,
+  BEGIN_ESCAPE,
+  END_ESCAPE,
 } from "./init.spec";
 
 const rootPath = "./.boilerplate";
@@ -30,10 +32,10 @@ const generateFilesAndFolders = () => {
   // create local args yml file
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
   // folder with template arg name
-  mkdirSync(`${rootPath}/component/<| name |>`);
+  mkdirSync(`${rootPath}/component/${BEGIN_ESCAPE} name ${END_ESCAPE}`);
   // file with template arg name and filetype
   writeFileSync(
-    `${rootPath}/component/<| name |>/<| name |>.<| filetype |>`,
+    `${rootPath}/component/${BEGIN_ESCAPE} name ${END_ESCAPE}/${BEGIN_ESCAPE} name ${END_ESCAPE}.${BEGIN_ESCAPE} filetype ${END_ESCAPE}`,
     placeholderContent
   );
 };

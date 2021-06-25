@@ -13,10 +13,11 @@ import { uniq, chunk, fromPairs, cloneDeep } from "lodash";
 import pipe from "lodash/fp/pipe";
 
 // utils
-import { emoji } from "../utils";
+import { emoji, escapeRegExp } from "../utils";
 
 // types
 import { Arg, ArgsObject } from "../types";
+import { BEGIN_ESCAPE, END_ESCAPE } from "./init.spec";
 
 interface Args {
   [key: string]: string;
@@ -26,8 +27,15 @@ interface SplitArgs {
   [key: string]: string[];
 }
 
+const BEGIN_ESCAPE_E = escapeRegExp(BEGIN_ESCAPE);
+const END_ESCAPE_E = escapeRegExp(END_ESCAPE);
+
 const extractArg = (arg: string) => {
-  return arg.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+  const regex = new RegExp(
+    `(?<=${BEGIN_ESCAPE_E})(.*?)(?=${END_ESCAPE_E})`,
+    "g"
+  );
+  return arg.match(regex);
 };
 
 const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
@@ -37,8 +45,16 @@ const replaceArgs = (
   argPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
-  const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
-  const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
+  // const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
+  const whitespaceLeftOfWord = new RegExp(
+    `(?<=${BEGIN_ESCAPE_E})\\s+(?=[^\\W])`,
+    "g"
+  ); // '<|   WORD'
+  // const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
+  const whitespaceRightOfWord = new RegExp(
+    `(?<=[^\\W]|\\))\\s+(?=${END_ESCAPE_E})`,
+    "g"
+  ); // 'WORD   |>'  OR  ')   |>' (for functions)
   const contentWithoutWhitespaces = content
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
@@ -46,7 +62,10 @@ const replaceArgs = (
   // replace arg placeholders with values
   const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
-      return output.replace(`<|${arg}|>`, argPlaceholderValues[arg]);
+      return output.replace(
+        `${BEGIN_ESCAPE}${arg}${END_ESCAPE}`,
+        argPlaceholderValues[arg]
+      );
     },
     contentWithoutWhitespaces
   );

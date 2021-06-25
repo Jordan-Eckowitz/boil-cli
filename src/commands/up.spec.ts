@@ -17,7 +17,6 @@ import { emoji, escapeRegExp } from "../utils";
 
 // types
 import { Arg, ArgsObject } from "../types";
-import { BEGIN_ESCAPE, END_ESCAPE } from "./init.spec";
 
 interface Args {
   [key: string]: string;
@@ -27,12 +26,11 @@ interface SplitArgs {
   [key: string]: string[];
 }
 
-const BEGIN_ESCAPE_E = escapeRegExp(BEGIN_ESCAPE);
-const END_ESCAPE_E = escapeRegExp(END_ESCAPE);
-
 const extractArg = (arg: string) => {
   const regex = new RegExp(
-    `(?<=${BEGIN_ESCAPE_E})(.*?)(?=${END_ESCAPE_E})`,
+    `(?<=${escapeRegExp(global.BEGIN_SEQ)})(.*?)(?=${escapeRegExp(
+      global.END_SEQ
+    )})`,
     "g"
   );
   return arg.match(regex);
@@ -47,12 +45,12 @@ const replaceArgs = (
   // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
   // const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
   const whitespaceLeftOfWord = new RegExp(
-    `(?<=${BEGIN_ESCAPE_E})\\s+(?=[^\\W])`,
+    `(?<=${escapeRegExp(global.BEGIN_SEQ)})\\s+(?=[^\\W])`,
     "g"
   ); // '<|   WORD'
   // const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
   const whitespaceRightOfWord = new RegExp(
-    `(?<=[^\\W]|\\))\\s+(?=${END_ESCAPE_E})`,
+    `(?<=[^\\W]|\\))\\s+(?=${escapeRegExp(global.END_SEQ)})`,
     "g"
   ); // 'WORD   |>'  OR  ')   |>' (for functions)
   const contentWithoutWhitespaces = content
@@ -63,7 +61,7 @@ const replaceArgs = (
   const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
       return output.replace(
-        `${BEGIN_ESCAPE}${arg}${END_ESCAPE}`,
+        `${global.BEGIN_SEQ}${arg}${global.END_SEQ}`,
         argPlaceholderValues[arg]
       );
     },

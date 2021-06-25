@@ -12,8 +12,6 @@ import {
   placeholderContent,
   templateFunctionContent,
   readmeContent,
-  BEGIN_ESCAPE,
-  END_ESCAPE,
 } from "./init.spec";
 
 const rootPath = "./.boilerplate";
@@ -24,19 +22,19 @@ const generateFilesAndFolders = () => {
   // create readme
   writeFileSync(`${rootPath}/readme.txt`, readmeContent);
   // create global args yml file
-  writeFileSync(`${rootPath}/global.args.yml`, globalYaml);
+  writeFileSync(`${rootPath}/global.args.yml`, globalYaml());
   // create template function
-  writeFileSync(`${rootPath}/timestamp.js`, templateFunctionContent);
+  writeFileSync(`${rootPath}/timestamp.js`, templateFunctionContent());
   // create component directory (example template out-of-the-box)
   mkdirSync(`${rootPath}/component`);
   // create local args yml file
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
   // folder with template arg name
-  mkdirSync(`${rootPath}/component/${BEGIN_ESCAPE} name ${END_ESCAPE}`);
+  mkdirSync(`${rootPath}/component/${global.BEGIN_SEQ} name ${global.END_SEQ}`);
   // file with template arg name and filetype
   writeFileSync(
-    `${rootPath}/component/${BEGIN_ESCAPE} name ${END_ESCAPE}/${BEGIN_ESCAPE} name ${END_ESCAPE}.${BEGIN_ESCAPE} filetype ${END_ESCAPE}`,
-    placeholderContent
+    `${rootPath}/component/${global.BEGIN_SEQ} name ${global.END_SEQ}/${global.BEGIN_SEQ} name ${global.END_SEQ}.${global.BEGIN_SEQ} filetype ${global.END_SEQ}`,
+    placeholderContent()
   );
 };
 

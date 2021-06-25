@@ -139,6 +139,14 @@ export const localAndGlobalArgs = (template: string) => {
   return args;
 };
 
+export const getEscapeSequence = (template: string) => {
+  const args = localAndGlobalArgs(template) as any;
+  return {
+    begin: args.$begin.default ?? "<|",
+    end: args.$end.default ?? "|>",
+  };
+};
+
 export const userProvidedArgs = (template: string) => {
   const inputs = process.argv;
   const templateIndex = inputs.indexOf(template);

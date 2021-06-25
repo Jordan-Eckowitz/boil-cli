@@ -43,9 +43,29 @@ export default class Init extends Command {
 
   static flags = {
     help: flags.help({ char: "h" }),
+    $begin: flags.string({
+      default: global.BEGIN_SEQ,
+      char: "b",
+      required: false,
+      description:
+        "Character sequence used to mark the beginning of a template parameter",
+    }),
+    $end: flags.string({
+      default: global.END_SEQ,
+      char: "e",
+      required: false,
+      description:
+        "Character sequence used to mark the end of a template parameter",
+    }),
   };
 
   async run() {
+    const { flags } = this.parse(Init);
+    const { $begin, $end } = flags;
+
+    global.BEGIN_SEQ = $begin;
+    global.END_SEQ = $end;
+
     if (boilerplateExists()) {
       this.log(
         printError(`looks like you already have a '.boilerplate' folder`)

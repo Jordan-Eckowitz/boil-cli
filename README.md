@@ -25,7 +25,7 @@ $ npm install -g boil-cli-tool
 $ boil COMMAND
 running command...
 $ boil (-v|--version|version)
-boil-cli-tool/1.1.1 darwin-x64 node-v12.13.1
+boil-cli-tool/1.1.1 darwin-arm64 node-v20.17.0
 $ boil --help [COMMAND]
 USAGE
   $ boil COMMAND
@@ -100,7 +100,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
 
 ## `boil init`
 

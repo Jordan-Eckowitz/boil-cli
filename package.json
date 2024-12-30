@@ -77,7 +77,7 @@
     "test": "bin/run init && TS_NODE_FILES=true nyc --reporter=html --reporter=text --extension .ts mocha --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "lint": "eslint . --ext .ts,.js --ignore-pattern coverage",
-    "release": "np --no-2fa"
+    "release": "npx np --no-2fa"
   },
   "husky": {
     "hooks": {

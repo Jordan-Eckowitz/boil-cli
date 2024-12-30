@@ -30,10 +30,10 @@ const generateFilesAndFolders = () => {
   // create local args yml file
   writeFileSync(`${rootPath}/component/local.args.yml`, localYaml);
   // folder with template arg name
-  mkdirSync(`${rootPath}/component/<| name |>`);
+  mkdirSync(`${rootPath}/component/___name___`);
   // file with template arg name and filetype
   writeFileSync(
-    `${rootPath}/component/<| name |>/<| name |>.<| filetype |>`,
+    `${rootPath}/component/___name___/___name___.___filetype___`,
     placeholderContent
   );
 };

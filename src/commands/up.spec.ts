@@ -27,7 +27,8 @@ interface SplitArgs {
 }
 
 const extractArg = (arg: string) => {
-  return arg.match(/(?<=\<\|)(.*?)(?=\|\>)/g);
+  const placeholderRegex = /___([^_]+?)___/g;
+  return [...arg.matchAll(placeholderRegex)].map((match) => match[1]);
 };
 
 const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
@@ -36,9 +37,9 @@ const replaceArgs = (
   content: string,
   argPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
-  // remove whitespaces between '<|' and '|>' symbols, e.g. <|  WORD  |>  =>  <|WORD|>
-  const whitespaceLeftOfWord = /(?<=\<\|)\s+(?=[^\W])/g; // '<|   WORD'
-  const whitespaceRightOfWord = /(?<=[^\W]|\))\s+(?=\|\>)/g; // 'WORD   |>'  OR  ')   |>' (for functions)
+  // remove whitespaces between '___' and '___' symbols, e.g.___ WORD ___ => ___WORD___
+  const whitespaceLeftOfWord = /(?<=___)[ ]+(?=[^\W])/g; // '___  WORD'
+  const whitespaceRightOfWord = /(?<=[^\W]|\))[ ]+(?=___)/g; // 'WORD  ___'  OR  ')  ___' (for functions)
   const contentWithoutWhitespaces = content
     .replace(whitespaceLeftOfWord, "")
     .replace(whitespaceRightOfWord, "");
@@ -46,20 +47,21 @@ const replaceArgs = (
   // replace arg placeholders with values
   const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
-      return output.replace(`<|${arg}|>`, argPlaceholderValues[arg]);
+      return output.replace(`___${arg}___`, argPlaceholderValues[arg]);
     },
     contentWithoutWhitespaces
   );
 
   // 'replace' only finds the first match ('replaceAll' not yet supported)
   //  so, keep running this function recursively until no template args remain
-  if (extractArg(newContent)) {
+  const extractedArgs = extractArg(newContent);
+  if (extractedArgs.length > 0) {
     return replaceArgs(newContent, argPlaceholderValues);
   }
   return newContent;
 };
 
-// regex looks for anything between triangles (<|*|>)
+// regex looks for anything between triangles (___*___)
 const extractArgsArray = (arg: string) => {
   const templateArg = extractArg(arg);
   // trim whitespaces
@@ -73,7 +75,7 @@ export const getTemplateArgs = (template: string) => {
   const rootPath = `./.boilerplate/${template}`;
   const args: string[] = [];
 
-  // recursively look for template args (<|*|>) in directory names, file names and within files
+  // recursively look for template args (___*___) in directory names, file names and within files
   const argsFromDirectoriesFilenamesFileContent = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
     directoriesAndFiles.forEach((dirOrFile) => {

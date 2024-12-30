@@ -77,7 +77,7 @@ run ${print("boil list")} to see all available boilerplate templates`,
       );
     }
 
-    // 3. Extract all template args (<|*|>) from the template directory
+    // 3. Extract all template args (___*___) from the template directory
     const allArgs = getTemplateArgs(template);
     const { templateArgs, functionalArgs } = splitArgs(allArgs);
 

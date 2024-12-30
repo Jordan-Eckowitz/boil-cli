@@ -42,7 +42,7 @@ describe("up", () => {
   test
     .stdout()
     .command(["create", "bad-example"])
-    .do(() => writeFileSync("./.boilerplate/bad-example/<|name|>.js", ""))
+    .do(() => writeFileSync("./.boilerplate/bad-example/___name___.js", ""))
     .command(["up", "bad-example"])
     .it("check all template args have been defined", (ctx) => {
       expect(ctx.stdout).to.contain(
@@ -54,7 +54,7 @@ describe("up", () => {
     .stdout()
     .command(["create", "another-bad-example"])
     .do(() =>
-      writeFileSync("./.boilerplate/another-bad-example/<|example()|>.js", "")
+      writeFileSync("./.boilerplate/another-bad-example/___example()___.js", "")
     )
     .command(["up", "another-bad-example"])
     .it("check all functional args have been defined", (ctx) => {

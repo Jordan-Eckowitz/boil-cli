@@ -15,11 +15,11 @@ name: # arg will be called using --name
   description: component name # used in help menu
 `;
 
-export const placeholderContent = `// <|timestamp()|>
-<|name|> = "hello world"
+export const placeholderContent = `//___timestamp()___
+___name___= "hello world"
 `;
 
-export const templateFunctionContent = `// this is a template function - it can be invoked in templates using <| timestamp() |>
+export const templateFunctionContent = `// this is a template function - it can be invoked in templates using___timestamp()___
 // see here for more details: https://jordan-eckowitz.github.io/boil-cli-docs/how-it-works/#template-functions
 module.exports = function () {
   return Date.now();

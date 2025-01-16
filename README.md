@@ -25,7 +25,7 @@ $ npm install -g boil-cli-tool
 $ boil COMMAND
 running command...
 $ boil (-v|--version|version)
-boil-cli-tool/2.0.0 darwin-arm64 node-v20.17.0
+boil-cli-tool/2.0.1 darwin-arm64 node-v20.17.0
 $ boil --help [COMMAND]
 USAGE
   $ boil COMMAND
@@ -63,7 +63,7 @@ EXAMPLES
   $ boil create person -a name,surname,age
 ```
 
-_See code: [src/commands/create.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.0/src/commands/create.ts)_
+_See code: [src/commands/create.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.1/src/commands/create.ts)_
 
 ## `boil create-function [NAME]`
 
@@ -83,7 +83,7 @@ EXAMPLE
   $ boil create-function timestamp
 ```
 
-_See code: [src/commands/create-function.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.0/src/commands/create-function.ts)_
+_See code: [src/commands/create-function.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.1/src/commands/create-function.ts)_
 
 ## `boil help [COMMAND]`
 
@@ -114,7 +114,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.0/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.1/src/commands/init.ts)_
 
 ## `boil list`
 
@@ -128,7 +128,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/list.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.0/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.1/src/commands/list.ts)_
 
 ## `boil up TEMPLATE`
 
@@ -151,5 +151,5 @@ EXAMPLES
   run boil list to see all available boilerplate templates
 ```
 
-_See code: [src/commands/up.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.0/src/commands/up.ts)_
+_See code: [src/commands/up.ts](https://github.com/Jordan-Eckowitz/boil-cli/blob/v2.0.1/src/commands/up.ts)_
 <!-- commandsstop -->

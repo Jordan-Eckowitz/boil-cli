@@ -74,7 +74,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "bin/run init && TS_NODE_FILES=true nyc --reporter=html --reporter=text --extension .ts mocha --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
+    "test": "rm -rf .boilerplate && bin/run init && TS_NODE_FILES=true nyc --reporter=html --reporter=text --extension .ts mocha --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "lint": "eslint . --ext .ts,.js --ignore-pattern coverage",
     "release": "npx np --no-2fa",

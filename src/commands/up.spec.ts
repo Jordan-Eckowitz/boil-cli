@@ -28,7 +28,8 @@ interface SplitArgs {
 
 const extractArg = (arg: string) => {
   const placeholderRegex = /___([^_]+?)___/g;
-  return [...arg.matchAll(placeholderRegex)].map((match) => match[1]);
+  // trim to ensure whitespaces around the arg are removed
+  return [...arg.matchAll(placeholderRegex)].map((match) => match[1]?.trim());
 };
 
 const containsBrackets = (arg: string) => arg.match(/\(.*?\)/);
@@ -37,31 +38,32 @@ const replaceArgs = (
   content: string,
   argPlaceholderValues: { [key: string]: string } // e.g. {name: 'App', filetype: 'js'}
 ): string => {
-  // remove whitespaces between '___' and '___' symbols, e.g.___ WORD ___ => ___WORD___
-  const whitespaceLeftOfWord = /(?<=___)[ ]+(?=[^\W])/g; // '___  WORD'
-  const whitespaceRightOfWord = /(?<=[^\W]|\))[ ]+(?=___)/g; // 'WORD  ___'  OR  ')  ___' (for functions)
-  const contentWithoutWhitespaces = content
-    .replace(whitespaceLeftOfWord, "")
-    .replace(whitespaceRightOfWord, "");
+  // remove whitespaces only between '___' pairs, e.g. "___ WORD ___" => "___WORD___"
+  const contentWithTrimmedPlaceholders = content.replace(
+    /___\s*(.*?)\s*___/g,
+    (_, group) => {
+      return `___${group.replace(/\s+/g, "")}___`;
+    }
+  );
 
   // replace arg placeholders with values
   const newContent = Object.keys(argPlaceholderValues).reduce(
     (output, arg): string => {
       return output.replace(`___${arg}___`, argPlaceholderValues[arg]);
     },
-    contentWithoutWhitespaces
+    contentWithTrimmedPlaceholders
   );
 
   // 'replace' only finds the first match ('replaceAll' not yet supported)
   //  so, keep running this function recursively until no template args remain
-  const extractedArgs = extractArg(newContent);
+  const extractedArgs = uniq(extractArg(newContent));
   if (extractedArgs.length > 0) {
     return replaceArgs(newContent, argPlaceholderValues);
   }
   return newContent;
 };
 
-// regex looks for anything between triangles (___*___)
+// regex looks for anything between double underscores (___*___)
 const extractArgsArray = (arg: string) => {
   const templateArg = extractArg(arg);
   // trim whitespaces
@@ -79,14 +81,15 @@ export const getTemplateArgs = (template: string) => {
   const argsFromDirectoriesFilenamesFileContent = (path: string) => {
     const directoriesAndFiles = readdirSync(path);
     directoriesAndFiles.forEach((dirOrFile) => {
+      const nestedFile = `${path}/${dirOrFile}`;
+      // if a file then extract template args from its contents
+      if (lstatSync(nestedFile).isFile()) {
+        const content = readFileSync(nestedFile, "utf8");
+        extractArgsArray(content).forEach((arg) => args.push(arg));
+      }
+      // if a directory then extract template args from its name
       extractArgsArray(dirOrFile).forEach((arg) => {
         args.push(arg);
-        const nestedFile = `${path}/${dirOrFile}`;
-        // if a file then extract template args from its contents
-        if (lstatSync(nestedFile).isFile()) {
-          const data = readFileSync(nestedFile, "utf8");
-          extractArgsArray(data).forEach((arg) => args.push(arg));
-        }
       });
       // if nested directories exist then recursively look for template args at that path
       const nestedPath = `${path}/${dirOrFile}`;
